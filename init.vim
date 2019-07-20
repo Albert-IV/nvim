@@ -3,6 +3,7 @@ execute pathogen#infect()
 syntax on
 set ruler
 set number
+set mouse=nv
 
 " Set up tab sizing
 set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab 
