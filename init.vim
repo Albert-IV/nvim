@@ -43,3 +43,6 @@ let g:suda_smart_edit = 1
 
 " Binds F5 (will probably change this) to showing / hiding Undotree
 nnoremap <F5> :UndotreeToggle<cr>
+
+"let g:ctrlp_map = '<c-p>'
+"let g:ctrlp_cmd = 'CtrlP'
