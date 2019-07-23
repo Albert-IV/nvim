@@ -41,8 +41,11 @@ let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
 " Automatically use sudo if writing to a proteceted file (via suda)
 let g:suda_smart_edit = 1
 
+" Have undotree be shorter
+"" let g:undotree_ShortIndicators = 1
+let g:undotree_SplitWidth = 27 
+let g:undotree_WindowLayout = 2 
+
 " Binds F5 (will probably change this) to showing / hiding Undotree
 nnoremap <F5> :UndotreeToggle<cr>
 
-"let g:ctrlp_map = '<c-p>'
-"let g:ctrlp_cmd = 'CtrlP'
