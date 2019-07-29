@@ -110,3 +110,7 @@ augroup javascript_folding
 augroup END
 set foldlevelstart=99 "start file with all folds opened
 
+" Theme settings
+let g:airline_theme='one'
+colorscheme one
+set background=dark 
