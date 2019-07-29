@@ -11,6 +11,9 @@ set tabstop=2 softtabstop=0 expandtab shiftwidth=2 smarttab
 " Make line cursor on be highlighted
 set cursorline
 
+" Set the <Leader> key to `,`
+let mapleader = ","
+
 " Set up buffers to be able to be hidden.
 " Checking which buffers are open is as easy as:
 " :ls which lists which buffers are currently loaded and
@@ -39,9 +42,6 @@ map <C-n> :NERDTreeToggle<CR>
 let NERDTreeQuitOnOpen = 1    " Close nerdtree on open
 let NERDTreeShowHidden=1      " Show hidden files
 let NERDTreeMinimalUI=1       " Disables the "Press ? for help" dialog at the top of NERDTree
-
-" Ensures VIM won't open files on the NERDTree window on accident
-autocmd BufEnter * if bufname('#') =~# "^NERD_tree_" && winnr('$') > 1 | b# | endif
 
 " Ignore files from file search that are in the .gitignore file
 let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
@@ -88,8 +88,6 @@ end
 " persist the undo tree for each file
 set undofile
 set undodir^=~/.vim/undo//
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Some defaults for running eslint for JS provided by:
 " https://medium.com/@hpux/vim-and-eslint-16fa08cc580f
@@ -102,3 +100,13 @@ let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 let g:syntastic_javascript_checkers = ['eslint']
 let g:syntastic_javascript_eslint_exe = 'npm run lint --'
+
+" vim-javascript settings
+let g:javascript_plugin_jsdoc = 1  " Enable syntax highlighting for JSDoc comments
+" Proper JS Folding with vim-javascript
+augroup javascript_folding
+    au!
+    au FileType javascript setlocal foldmethod=syntax
+augroup END
+set foldlevelstart=99 "start file with all folds opened
+
