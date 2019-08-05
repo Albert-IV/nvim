@@ -46,3 +46,9 @@
 [submodule "bundle/vim-one"]
 	path = bundle/vim-one
 	url = https://github.com/rakr/vim-one.git
+[submodule "bundle/vim-brittany"]
+	path = bundle/vim-brittany
+	url = https://github.com/meck/vim-brittany.git
+[submodule "bundle/vim-ctrlspace"]
+	path = bundle/vim-ctrlspace
+	url = https://github.com/vim-ctrlspace/vim-ctrlspace.git
