@@ -67,6 +67,3 @@
 [submodule "bundle/elm-vim"]
 	path = bundle/elm-vim
 	url = https://github.com/ElmCast/elm-vim.git
-[submodule "bundle/vim-startify"]
-	path = bundle/vim-startify
-	url = https://github.com/mhinz/vim-startify.git
