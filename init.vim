@@ -5,8 +5,11 @@ set ruler
 set number
 set mouse=nv
 
+" Set up vim clipboard and system clipboard to sync
+set clipboard=unnamed
+
 " Set up tab sizing
-set tabstop=2 softtabstop=0 expandtab shiftwidth=2 smarttab 
+set tabstop=2 softtabstop=0 expandtab shiftwidth=2 smarttab
 
 " Make line cursor on be highlighted
 set cursorline
@@ -17,7 +20,7 @@ let mapleader = ","
 " Set up buffers to be able to be hidden.
 " Checking which buffers are open is as easy as:
 " :ls which lists which buffers are currently loaded and
-" :buffer <tab> | <number> | <filename> to open the buffer 
+" :buffer <tab> | <number> | <filename> to open the buffer
 set hidden
 
 " Vim Clojure Static
@@ -27,11 +30,17 @@ filetype plugin indent on
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
 
-" Map Cmd + JKLH to change panes
+" Map Cmd + jklh to change windows
 nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
+
+" Map <leader> (currently ,) + jklh to move windows
+nnoremap <leader>j <C-W>J
+nnoremap <leader>k <C-W>K
+nnoremap <leader>l <C-W>L
+nnoremap <leader>h <C-W>H
 
 " Set up pane splitting to "feel" more natural
 set splitbelow
@@ -39,7 +48,7 @@ set splitright
 
 " Map Ctrl+N to opening / closing the file explorer
 map <C-n> :NERDTreeToggle<CR>
-let NERDTreeQuitOnOpen = 1    " Close nerdtree on open
+" let NERDTreeQuitOnOpen = 1    " Close nerdtree on open
 let NERDTreeShowHidden=1      " Show hidden files
 let NERDTreeMinimalUI=1       " Disables the "Press ? for help" dialog at the top of NERDTree
 
@@ -55,8 +64,8 @@ let g:suda_smart_edit = 1
 
 " Have undotree be shorter
 "" let g:undotree_ShortIndicators = 1
-let g:undotree_SplitWidth = 27 
-let g:undotree_WindowLayout = 2 
+let g:undotree_SplitWidth = 27
+let g:undotree_WindowLayout = 2
 
 " Binds F5 (will probably change this) to showing / hiding Undotree
 nnoremap <F5> :UndotreeToggle<cr>
@@ -116,7 +125,7 @@ set foldlevelstart=99 "start file with all folds opened
 
 " Theme settings
 let g:airline_theme='one'
-set background=dark 
+set background=dark
 let g:one_allow_italics=1 " Turn on italics
 colorscheme one
 
@@ -145,3 +154,35 @@ let g:CtrlSpaceDefaultMappingKey = "<C-space> "
 let g:CtrlSpaceLoadLastWorkspaceOnStart = 1
 let g:CtrlSpaceSaveWorkspaceOnSwitch = 1
 let g:CtrlSpaceSaveWorkspaceOnExit = 1
+
+" Enable deoplete on startup
+" (python3 enabled JS autocompletion)
+let g:deoplete#enable_at_startup = 1
+
+" Set it up so that Prettier runs on save for .js .jsx and .ts files
+autocmd BufWritePre,FileWritePre,FileAppendPre *.js :Prettier
+autocmd BufWritePre,FileWritePre,FileAppendPre *.jsx :Prettier
+autocmd BufWritePre,FileWritePre,FileAppendPre *.ts :Prettier
+
+" NERDcommenter settings
+let g:NERDSpaceDelims = 1
+let g:NERDCompactSexyComs = 1
+let g:NERDDefaultAlign = 'left'
+
+" Set up autocomplete menu to resemble zsh
+set wildmenu
+set wildmode=full
+
+" Make VIM remeber more previously ran commands
+set history=1000
+
+" Automatically remove trailing spaces
+autocmd BufWritePre * %s/\s\+$//e
+
+" Set the default vim search to be case insensitive
+" You can add the \c to search using the correct case
+" OR you if you use an uppercase letter will switch to
+" case specific searching.
+" https://stackoverflow.com/questions/2287440/how-to-do-case-insensitive-search-in-vim
+set ignorecase
+set smartcase
