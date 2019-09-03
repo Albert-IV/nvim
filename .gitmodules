@@ -67,3 +67,6 @@
 [submodule "bundle/elm-vim"]
 	path = bundle/elm-vim
 	url = https://github.com/ElmCast/elm-vim.git
+[submodule "bundle/vim-obsession"]
+	path = bundle/vim-obsession
+	url = https://github.com/tpope/vim-obsession.git

@@ -186,3 +186,13 @@ autocmd BufWritePre * %s/\s\+$//e
 " https://stackoverflow.com/questions/2287440/how-to-do-case-insensitive-search-in-vim
 set ignorecase
 set smartcase
+
+" Automatically create closing braces
+" and move cursor inside of them by
+" double-opening the brace
+imap "" ""<esc>i
+imap '' ''<esc>i
+imap (( ()<esc>i
+imap [[ []<esc>i
+imap {{ {}<esc>i
+
