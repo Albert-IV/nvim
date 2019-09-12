@@ -159,6 +159,9 @@ let g:CtrlSpaceSaveWorkspaceOnExit = 1
 " (python3 enabled JS autocompletion)
 let g:deoplete#enable_at_startup = 1
 
+" disable Deoplete for elm files
+autocmd FileType elm call deoplete#custom#buffer_option('auto_complete', v:false)
+
 " Set it up so that Prettier runs on save for .js .jsx and .ts files
 autocmd BufWritePre,FileWritePre,FileAppendPre *.js :Prettier
 autocmd BufWritePre,FileWritePre,FileAppendPre *.jsx :Prettier
@@ -195,4 +198,5 @@ imap '' ''<esc>i
 imap (( ()<esc>i
 imap [[ []<esc>i
 imap {{ {}<esc>i
+
 
