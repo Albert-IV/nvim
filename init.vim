@@ -126,6 +126,7 @@ set foldlevelstart=99 "start file with all folds opened
 " Theme settings
 let g:airline_theme='one'
 set background=dark
+" set background=light
 let g:one_allow_italics=1 " Turn on italics
 colorscheme one
 
@@ -198,5 +199,10 @@ imap '' ''<esc>i
 imap (( ()<esc>i
 imap [[ []<esc>i
 imap {{ {}<esc>i
+
+" Ensure when editing crontab entries you're able to save:
+" https://superuser.com/a/907889/197740
+autocmd filetype crontab setlocal nobackup nowritebackup
+
 
 
