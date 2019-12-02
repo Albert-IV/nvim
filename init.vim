@@ -1,9 +1,19 @@
 execute pathogen#infect()
 
+" General settings
 syntax on
 set ruler
 set number
 set mouse=nv
+
+" Disable wordwrap (for now), display X characters
+" around cursor
+set wrap!
+set siso=4
+
+" Enable True Color in terminal
+" https://github.com/neovim/neovim/wiki/FAQ#how-can-i-use-true-color-in-the-terminal
+set termguicolors
 
 " Set up vim clipboard and system clipboard to sync
 set clipboard=unnamed
@@ -22,6 +32,14 @@ let mapleader = ","
 " :ls which lists which buffers are currently loaded and
 " :buffer <tab> | <number> | <filename> to open the buffer
 set hidden
+
+" Set the default vim search to be case insensitive
+" You can add the \c to search using the correct case
+" OR you if you use an uppercase letter will switch to
+" case specific searching.
+" https://stackoverflow.com/questions/2287440/how-to-do-case-insensitive-search-in-vim
+set ignorecase
+set smartcase
 
 " Vim Clojure Static
 filetype plugin indent on
@@ -183,26 +201,46 @@ set history=1000
 " Automatically remove trailing spaces
 autocmd BufWritePre * %s/\s\+$//e
 
-" Set the default vim search to be case insensitive
-" You can add the \c to search using the correct case
-" OR you if you use an uppercase letter will switch to
-" case specific searching.
-" https://stackoverflow.com/questions/2287440/how-to-do-case-insensitive-search-in-vim
-set ignorecase
-set smartcase
+" Magic function to open terminal using ,t
+let s:term_buf = 0
+let s:term_win = 0
+
+function! TermToggle(height)
+    if win_gotoid(s:term_win)
+        hide
+    else
+        new terminal
+        exec "resize " . a:height
+        try
+            exec "buffer " . s:term_buf
+            exec "bd terminal"
+        catch
+            call termopen($SHELL, {"detach": 0})
+            let s:term_buf = bufnr("")
+            set nonumber
+            set norelativenumber
+            set signcolumn=no
+            set nocursorline
+        endtry
+        startinsert!
+        let s:term_win = win_getid()
+    endif
+  endfunction
+
+nnoremap <silent><leader>t :call TermToggle(12)<CR>
+tnoremap <Esc> <C-\><C-n>
 
 " Automatically create closing braces
 " and move cursor inside of them by
 " double-opening the brace
-imap "" ""<esc>i
-imap '' ''<esc>i
-imap (( ()<esc>i
-imap [[ []<esc>i
-imap {{ {}<esc>i
+" (DISABLED) Was causing some weird behavior in insert mode
+" imap "" ""<esc>i
+" imap '' ''<esc>i
+" imap (( ()<esc>i
+" imap [[ []<esc>i
+" imap {{ {}<esc>i
 
 " Ensure when editing crontab entries you're able to save:
 " https://superuser.com/a/907889/197740
 autocmd filetype crontab setlocal nobackup nowritebackup
-
-
 
