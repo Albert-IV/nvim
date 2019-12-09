@@ -21,6 +21,9 @@ set clipboard=unnamed
 " Set up tab sizing
 set tabstop=2 softtabstop=0 expandtab shiftwidth=2 smarttab
 
+" Enable transparent tooltips
+set pumblend=40
+
 " Make line cursor on be highlighted
 set cursorline
 
@@ -244,3 +247,5 @@ tnoremap <Esc> <C-\><C-n>
 " https://superuser.com/a/907889/197740
 autocmd filetype crontab setlocal nobackup nowritebackup
 
+" Set pairs to rainbow-ify
+let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}'], ['<', '>']]
