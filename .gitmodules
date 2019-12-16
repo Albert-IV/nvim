@@ -52,9 +52,6 @@
 [submodule "bundle/haskell-vim"]
 	path = bundle/haskell-vim
 	url = https://github.com/neovimhaskell/haskell-vim.git
-[submodule "bundle/deoplete.nvim"]
-	path = bundle/deoplete.nvim
-	url = https://github.com/Shougo/deoplete.nvim.git
 [submodule "bundle/vim-jsx-pretty"]
 	path = bundle/vim-jsx-pretty
 	url = https://github.com/MaxMEllon/vim-jsx-pretty.git
