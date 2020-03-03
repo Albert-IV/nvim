@@ -5,11 +5,7 @@ syntax on
 set ruler
 set number
 set mouse=nv
-
-" Disable wordwrap (for now), display X characters
-" around cursor
-set wrap!
-set siso=4
+set wrap
 
 " Enable True Color in terminal
 " https://github.com/neovim/neovim/wiki/FAQ#how-can-i-use-true-color-in-the-terminal
@@ -150,7 +146,8 @@ let g:airline_theme='one'
 set background=dark
 " set background=light
 let g:one_allow_italics=1 " Turn on italics
-colorscheme one
+" colorscheme one
+colo seoul256
 
 "Credit joshdick
 "Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
@@ -178,6 +175,25 @@ let g:CtrlSpaceLoadLastWorkspaceOnStart = 1
 let g:CtrlSpaceSaveWorkspaceOnSwitch = 1
 let g:CtrlSpaceSaveWorkspaceOnExit = 1
 
+"""""""""""""""""""""
+" coc.vim
+"""""""""""""""""""""
+" use <tab> for trigger completion and navigate to the next complete item
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+inoremap <silent><expr> <Tab>
+  \ pumvisible() 
+    \ ? "\<C-n>" 
+    \ : <SID>check_back_space() 
+        \ ? "\<Tab>" 
+        \ : coc#refresh()
+
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
 " Set it up so that Prettier runs on save for .js .jsx and .ts files
 autocmd BufWritePre,FileWritePre,FileAppendPre *.js :Prettier
 autocmd BufWritePre,FileWritePre,FileAppendPre *.jsx :Prettier
@@ -196,7 +212,7 @@ set wildmode=full
 set history=1000
 
 " Automatically remove trailing spaces
-autocmd BufWritePre * %s/\s\+$//e
+" autocmd BufWritePre * %s/\s\+$//e
 
 " Magic function to open terminal using ,t
 let s:term_buf = 0
