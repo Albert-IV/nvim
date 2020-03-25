@@ -76,3 +76,6 @@
 [submodule "bundle/gruvbox"]
 	path = bundle/gruvbox
 	url = https://github.com/morhetz/gruvbox.git
+[submodule "bundle/vim-gutentags"]
+	path = bundle/vim-gutentags
+	url = git@github.com:ludovicchabant/vim-gutentags.git
