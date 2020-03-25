@@ -15,6 +15,10 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install
 
 ```brew install the_silver_searcher```
 
+* Exuberant Ctags
+
+```brew install ctags```
+
 ## Get Italics Working in iTerm (and maybe others)
 
 * Create a plain text file called `xterm-256color-italic.terminfo` with the following:
