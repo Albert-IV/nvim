@@ -1,7 +1,15 @@
 call plug#begin(stdpath('config') . '/plugged')
 
 "" PLUGIN SETTINGS 
+
+"" Color Scheme(s)
 Plug 'junegunn/seoul256.vim'
+
+" General Utilities
+Plug 'machakann/vim-sandwich'
+Plug 'preservim/nerdtree'
+
+" Language Specific
 
 call plug#end()
 "" END PLUGINS
