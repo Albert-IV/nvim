@@ -1,0 +1,7 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =5
+let g:netrw_dirhist_5='/Users/alberte/.config/nvim'
+let g:netrw_dirhist_4='/Users/alberte/.config/nvim/colors'
+let g:netrw_dirhist_3='/Users/alberte/.config/nvim'
+let g:netrw_dirhist_2='/Users/alberte/.config/nvim/bundle'
+let g:netrw_dirhist_1='/Users/alberte/.config/nvim'
