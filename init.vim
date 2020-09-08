@@ -1,8 +1,7 @@
-call plug#begin(stdpath('config') . '/plugged')
-
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " START PLUGINS
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+call plug#begin(stdpath('config') . '/plugged')
 
 """"""""""""""""""""""""""""""""""""""""""""""""""
 " Color Scheme(s)
@@ -19,6 +18,7 @@ Plug 'mbbill/undotree'
 Plug 'tpope/vim-obsession'
 Plug 'vim-ctrlspace/vim-ctrlspace'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'mileszs/ack.vim'
 
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " Language Specific
@@ -291,4 +291,21 @@ let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --ma
 nnoremap <C-p> :<C-u>FZF<CR> 
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END FZF Specific Settings
+""""""""""""""""""""""""""" 
+
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START ack Specific Settings
+""""""""""""""""""""""""""" 
+" Use ag if available
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
+nnoremap <Leader>f :Ack!<Space>
+let g:ack_autoclose = 1
+let g:ackhighlight = 1
+let g:ackpreview = 1
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START ack Specific Settings
 """"""""""""""""""""""""""" 
