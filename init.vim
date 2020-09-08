@@ -133,16 +133,6 @@ set wildmode=full
 " Make VIM remeber more previously ran commands
 set history=1000
 
-" Automatically create closing braces
-" and move cursor inside of them by
-" double-opening the brace
-" (DISABLED) Was causing some weird behavior in insert mode
-" imap "" ""<esc>i
-" imap '' ''<esc>i
-" imap (( ()<esc>i
-" imap [[ []<esc>i
-" imap {{ {}<esc>i
-
 " Ensure when editing crontab entries you're able to save:
 " https://superuser.com/a/907889/197740
 autocmd filetype crontab setlocal nobackup nowritebackup
