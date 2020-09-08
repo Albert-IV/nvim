@@ -8,6 +8,7 @@ Plug 'junegunn/seoul256.vim'
 " General Utilities
 Plug 'machakann/vim-sandwich'
 Plug 'preservim/nerdtree'
+Plug 'lambdalisue/suda.vim'
 
 " Language Specific
 
@@ -137,7 +138,19 @@ set history=1000
 " https://superuser.com/a/907889/197740
 autocmd filetype crontab setlocal nobackup nowritebackup
 
-"" START NERDTree Specific Settings
+
+
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""" BEGIN PLUGIN SETTINGS """"""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START NERDTree Specific Settings
+""""""""""""""""""""""""""" 
 " Autostart NERDTree
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
@@ -150,5 +163,17 @@ let NERDTreeShowHidden=1
 
 " Disables the "Press ? for help" dialog at the top of NERDTree
 let NERDTreeMinimalUI=1       
-"" END Nerdtree
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END Nerdtree
+""""""""""""""""""""""""""" 
 
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START Suda Specific Settings
+""""""""""""""""""""""""""" 
+" Automatically use sudo if writing to a proteceted file (via suda)
+let g:suda_smart_edit = 1
+""""""""""""""""""""""""""" END Suda Specific Settings
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" 
