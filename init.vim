@@ -31,6 +31,7 @@ Plug 'luochen1990/rainbow'
 
 " Javascript
 Plug 'prettier/vim-prettier'
+Plug 'pangloss/vim-javascript'
 
 " CSS
 Plug 'ap/vim-css-color'
@@ -308,4 +309,19 @@ let g:ackhighlight = 1
 let g:ackpreview = 1
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" START ack Specific Settings
+""""""""""""""""""""""""""" 
+
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START vim-javascript Specific Settings
+""""""""""""""""""""""""""" 
+augroup javascript_folding
+    au!
+    au FileType javascript setlocal foldmethod=syntax
+augroup END
+let g:javascript_plugin_jsdoc = 1
+set foldlevelstart=99 "start file with all folds opened
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START vim-javascript Specific Settings
 """"""""""""""""""""""""""" 
