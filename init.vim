@@ -19,6 +19,7 @@ Plug 'tpope/vim-obsession'
 Plug 'vim-ctrlspace/vim-ctrlspace'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'mileszs/ack.vim'
+Plug 'neovim/nvim-lsp'
 
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " Language Specific
@@ -28,6 +29,8 @@ Plug 'mileszs/ack.vim'
 Plug 'tpope/vim-commentary'
 Plug 'vim-syntastic/syntastic'
 Plug 'luochen1990/rainbow'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'Shougo/deoplete-lsp'
 
 " Javascript
 Plug 'prettier/vim-prettier'
@@ -164,6 +167,14 @@ set history=1000
 " https://superuser.com/a/907889/197740
 autocmd filetype crontab setlocal nobackup nowritebackup
 
+" Show live substitutations when using :%s/pattern/replacement/
+set inccommand=split
+
+" If on nightly version of neovim, highlight yanked text
+augroup LuaHighlight
+  autocmd!
+  autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank()
+augroup END
 
 
 
@@ -308,7 +319,7 @@ let g:ack_autoclose = 1
 let g:ackhighlight = 1
 let g:ackpreview = 1
 """"""""""""""""""""""""""" 
-""""""""""""""""""""""""""" START ack Specific Settings
+""""""""""""""""""""""""""" END ack Specific Settings
 """"""""""""""""""""""""""" 
 
 
@@ -323,5 +334,35 @@ augroup END
 let g:javascript_plugin_jsdoc = 1
 set foldlevelstart=99 "start file with all folds opened
 """"""""""""""""""""""""""" 
-""""""""""""""""""""""""""" START vim-javascript Specific Settings
+""""""""""""""""""""""""""" END vim-javascript Specific Settings
+""""""""""""""""""""""""""" 
+
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START vim-lsp Specific Settings
+""""""""""""""""""""""""""" 
+" Sets up TS server LSP with default options
+lua <<EOF
+require'nvim_lsp'.tsserver.setup{}
+EOF
+
+" View type information
+nnoremap <silent>K     <cmd>lua vim.lsp.buf.hover()<CR>
+
+" View where the function was defined
+nnoremap <silent>gd    <cmd>lua vim.lsp.buf.definition()<CR>
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END vim-lsp Specific Settings
+""""""""""""""""""""""""""" 
+
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START Deoplete Specific Settings
+""""""""""""""""""""""""""" 
+" Enable Deoplete
+let g:deoplete#enable_at_startup = 1
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END Deoplete Specific Settings
 """"""""""""""""""""""""""" 
