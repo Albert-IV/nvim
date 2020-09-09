@@ -451,6 +451,8 @@ require'nvim-treesitter.configs'.setup {
   },
 }
 EOF
+
+map <leader><C-r> :write<CR>  :edit<CR> :TSBufEnable highlight<CR>
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Treesitter Specific Settings
 """"""""""""""""""""""""""" 
