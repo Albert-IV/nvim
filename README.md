@@ -1,8 +1,8 @@
-![NeoVim Logo](https://raw.githubusercontent.com/droppedoncaprica/nvim/master/img/neovim-logo-1color.png)
+![Neovim Logo](https://raw.githubusercontent.com/droppedoncaprica/nvim/master/img/neovim-logo-1color.png)
 
 # NeoVim Config
 
-This is my NVM config. There are many like it, but this one is mine.  
+This is my Neovim config. There are many like it, but this one is mine.  
 
 **Current iteration requires Neovim nightly build (until that blows up in my face).**
 
