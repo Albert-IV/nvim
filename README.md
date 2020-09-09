@@ -1,23 +1,26 @@
 # NVIM Settings
 
-This is a collection of NVIM repos and configs that I use.
+This is my NVM config. There are many like it, but this one is mine.  Current iteration requires Neovim nightly build (until that blows up in my face).
 
 ## Dependencies
 
 * fzf
+
+Definitely need this.
+
 ```bash
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install
 ```
 
 * the_silver_searcher
 
+Though I'm not sure if this is still needed.
+
 ```sudo apt-get install silversearcher-ag```
 
 ```brew install the_silver_searcher```
 
-* Exuberant Ctags
-
-```brew install ctags```
+# TERMINAL HALP
 
 ## Get Italics Working in iTerm (and maybe others)
 
@@ -36,7 +39,7 @@ xterm-256color-italic|xterm with 256 colors and italic,
 
 > Finally, we need to tell iTerm2 to use this new TERM, xterm-256color-italic, by default. This is done in the terminal pane of whatever profile you’re using. The new entry probably won’t be in the list, but we can just type it in.
 
-![terminal-type](terminal-type.jpeg)
+![terminal-type](./terminal-type.jpeg)
 
 > If you don’t see italicised text, something else might be overriding the TERM environment variable. Check its value is xterm-256color-italic.
 
