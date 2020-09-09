@@ -1,5 +1,7 @@
 # NVIM Settings
 
+![NeoVim Logo](https://raw.githubusercontent.com/droppedoncaprica/nvim/master/img/neovim-logo-1color.png)
+
 This is my NVM config. There are many like it, but this one is mine.  
 
 **Current iteration requires Neovim nightly build (until that blows up in my face).**
@@ -41,7 +43,7 @@ xterm-256color-italic|xterm with 256 colors and italic,
 
 > Finally, we need to tell iTerm2 to use this new TERM, xterm-256color-italic, by default. This is done in the terminal pane of whatever profile you’re using. The new entry probably won’t be in the list, but we can just type it in.
 
-![terminal-type](https://raw.githubusercontent.com/droppedoncaprica/nvim/master/terminal-type.jpg)
+![terminal-type](https://raw.githubusercontent.com/droppedoncaprica/nvim/master/img/terminal-type.jpg)
 
 > If you don’t see italicised text, something else might be overriding the TERM environment variable. Check its value is xterm-256color-italic.
 
