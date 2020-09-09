@@ -1,6 +1,6 @@
-# NVIM Settings
-
 ![NeoVim Logo](https://raw.githubusercontent.com/droppedoncaprica/nvim/master/img/neovim-logo-1color.png)
+
+# NeoVim Config
 
 This is my NVM config. There are many like it, but this one is mine.  
 
