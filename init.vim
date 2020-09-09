@@ -7,7 +7,9 @@ call plug#begin(stdpath('config') . '/plugged')
 " Color Scheme(s) / Themes / Status Lines
 """"""""""""""""""""""""""""""""""""""""""""""""""
 Plug 'junegunn/seoul256.vim'
+Plug 'morhetz/gruvbox'
 Plug 'rbong/vim-crystalline'
+Plug 'luochen1990/rainbow'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""
 " General Utilities
@@ -28,14 +30,13 @@ Plug 'neovim/nvim-lsp'
 
 " General Languages
 Plug 'tpope/vim-commentary'
-Plug 'vim-syntastic/syntastic'
-Plug 'luochen1990/rainbow'
+Plug 'dense-analysis/ale'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Shougo/deoplete-lsp'
+Plug 'nvim-treesitter/nvim-treesitter'
 
 " Javascript
 Plug 'prettier/vim-prettier'
-Plug 'pangloss/vim-javascript'
 
 " CSS
 Plug 'ap/vim-css-color'
@@ -48,7 +49,9 @@ call plug#end()
 
 " Theme settings
 set background=dark
-colo seoul256
+let g:gruvbox_italic=1
+let g:gruvbox_contrast_dark='hard'
+colo gruvbox
 
 " General settings
 syntax on
@@ -75,10 +78,10 @@ augroup END
 set pumblend=40
 
 " Make line cursor on be highlighted
-set cursorline
+" set cursorline
 
 " Also cursor column highlight
-set cursorcolumn
+" set cursorcolumn
 
 " Set the <Leader> key to `,`
 let mapleader = ","
@@ -244,25 +247,6 @@ nnoremap <F5> :UndotreeToggle<cr>
 
 
 """"""""""""""""""""""""""" 
-""""""""""""""""""""""""""" START Syntastic Specific Settings
-""""""""""""""""""""""""""" 
-" set statusline+=%#warningmsg#
-" set statusline+=%{SyntasticStatuslineFlag()}
-" set statusline+=%*
-
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_javascript_checkers = ['eslint']
-let g:syntastic_javascript_eslint_exe = 'npm run lint --'
-""""""""""""""""""""""""""" 
-""""""""""""""""""""""""""" END Syntastic Specific Settings
-""""""""""""""""""""""""""" 
-
-
-
-""""""""""""""""""""""""""" 
 """"""""""""""""""""""""""" START Prettier Specific Settings
 """"""""""""""""""""""""""" 
 " Set it up so that Prettier runs on save for .js .jsx and .ts files
@@ -338,21 +322,6 @@ let g:ackpreview = 1
 
 
 """"""""""""""""""""""""""" 
-""""""""""""""""""""""""""" START vim-javascript Specific Settings
-""""""""""""""""""""""""""" 
-augroup javascript_folding
-    au!
-    au FileType javascript setlocal foldmethod=syntax
-augroup END
-let g:javascript_plugin_jsdoc = 1
-set foldlevelstart=99 "start file with all folds opened
-""""""""""""""""""""""""""" 
-""""""""""""""""""""""""""" END vim-javascript Specific Settings
-""""""""""""""""""""""""""" 
-
-
-
-""""""""""""""""""""""""""" 
 """"""""""""""""""""""""""" START vim-lsp Specific Settings
 """"""""""""""""""""""""""" 
 " Sets up TS server LSP with default options
@@ -365,6 +334,14 @@ nnoremap <silent>K     <cmd>lua vim.lsp.buf.hover()<CR>
 
 " View where the function was defined
 nnoremap <silent>gd    <cmd>lua vim.lsp.buf.definition()<CR>
+
+" Always show the sign gutter, since LSP will add to it as you type
+set signcolumn=yes
+
+""" TODO: Verify this works how we want it to.
+augroup ALEAutocompleteOFF 
+  autocmd FileType javascript let g:ale_disable_lsp = 1
+augroup END
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END vim-lsp Specific Settings
 """"""""""""""""""""""""""" 
@@ -403,7 +380,6 @@ function! StatusLine(current, width)
   endif
   if a:width > 80
     let l:s .= ' %{&ft}[%{&fenc!=#""?&fenc:&enc}][%{&ff}] %l/%L %c%V %P '
-    let l:s .= '%{SyntasticStatuslineFlag()}'
   else
     let l:s .= ' '
   endif
@@ -428,3 +404,53 @@ set laststatus=2
 """"""""""""""""""""""""""" END Crystalline Specific Settings
 """"""""""""""""""""""""""" 
 
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START Treesitter Specific Settings
+""""""""""""""""""""""""""" 
+" Enable it all
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "javascript", "typescript", "go", "json" },
+  highlight = {
+    enable = true,
+  },
+  refactor = {
+    -- Highlighting definitions doesn't seem to work inside JS the way I'd expect.
+    -- highlight_definitions = { enable = true },
+    highlight_current_scope = { enable = true },
+    smart_rename = {
+      enable = true,
+      keymaps = {
+        smart_rename = "<leader>r",
+      },
+    },
+    navigation = {
+      enable = true,
+      keymaps = {
+        goto_definition = "<leader>dd",
+        list_definitions = "<leader>dl",
+        goto_next_usage = "<a-j>",
+        goto_previous_usage = "<a-k>",
+      },
+    },
+  },
+  textobjects = {
+    select = {
+      enable = true,
+      keymaps = {
+        -- You can use the capture groups defined in textobjects.scm
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        -- Not really useful on how we use JS
+        -- ["ac"] = "@class.outer",
+        -- ["ic"] = "@class.inner",
+      },
+    },
+  },
+}
+EOF
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END Treesitter Specific Settings
+""""""""""""""""""""""""""" 
