@@ -65,7 +65,10 @@ set clipboard=unnamed
 
 " Set up tab sizing
 set tabstop=2 softtabstop=0 expandtab shiftwidth=2 smarttab
-autocmd FileType elm setlocal shiftwidth=4 tabstop=4 smarttab
+augroup ElmIndentation
+  autocmd!
+  autocmd FileType elm setlocal shiftwidth=4 tabstop=4 smarttab
+augroup END
 
 " Enable transparent tooltips
 set pumblend=40
@@ -165,7 +168,10 @@ set history=1000
 
 " Ensure when editing crontab entries you're able to save:
 " https://superuser.com/a/907889/197740
-autocmd filetype crontab setlocal nobackup nowritebackup
+augroup FixWritingCrons
+  autocmd!
+  autocmd filetype crontab setlocal nobackup nowritebackup
+augroup END
 
 " Show live substitutations when using :%s/pattern/replacement/
 set inccommand=split
@@ -189,8 +195,11 @@ augroup END
 """"""""""""""""""""""""""" START NERDTree Specific Settings
 """"""""""""""""""""""""""" 
 " Autostart NERDTree
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
+augroup NERDTreeAutostart
+  autocmd!
+  autocmd StdinReadPre * let s:std_in=1
+  autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
+augroup END
 
 " Map Ctrl+N to opening / closing the file explorer
 map <C-n> :NERDTreeToggle<CR>
@@ -256,9 +265,12 @@ let g:syntastic_javascript_eslint_exe = 'npm run lint --'
 """"""""""""""""""""""""""" START Prettier Specific Settings
 """"""""""""""""""""""""""" 
 " Set it up so that Prettier runs on save for .js .jsx and .ts files
-autocmd BufWritePre,FileWritePre,FileAppendPre *.js :Prettier
-autocmd BufWritePre,FileWritePre,FileAppendPre *.jsx :Prettier
-autocmd BufWritePre,FileWritePre,FileAppendPre *.ts :Prettier
+augroup AutomaticPrettier
+  autocmd!
+  autocmd BufWritePre,FileWritePre,FileAppendPre *.js :Prettier
+  autocmd BufWritePre,FileWritePre,FileAppendPre *.jsx :Prettier
+  autocmd BufWritePre,FileWritePre,FileAppendPre *.ts :Prettier
+augroup END
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Prettier Specific Settings
 """"""""""""""""""""""""""" 
