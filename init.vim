@@ -33,10 +33,14 @@ Plug 'tpope/vim-commentary'
 Plug 'dense-analysis/ale'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Shougo/deoplete-lsp'
-Plug 'nvim-treesitter/nvim-treesitter'
+" Plug 'nvim-treesitter/nvim-treesitter'
 
 " Javascript
 Plug 'prettier/vim-prettier'
+
+" Clojure
+Plug 'guns/vim-sexp',    {'for': 'clojure'}
+Plug 'liquidz/vim-iced', {'for': 'clojure'}
 
 " CSS
 Plug 'ap/vim-css-color'
@@ -78,10 +82,10 @@ augroup END
 set pumblend=40
 
 " Make line cursor on be highlighted
-" set cursorline
+set cursorline
 
 " Also cursor column highlight
-" set cursorcolumn
+set cursorcolumn
 
 " Set the <Leader> key to `,`
 let mapleader = ","
@@ -311,7 +315,8 @@ nnoremap <C-p> :<C-u>FZF<CR>
 if executable('ag')
   let g:ackprg = 'ag --vimgrep'
 endif
-nnoremap <Leader>f :Ack!<Space>
+nnoremap <Leader>f :Ack!<Space>""<Left>
+nnoremap <Leader>F :Ack!<CR>
 let g:ack_autoclose = 1
 let g:ackhighlight = 1
 let g:ackpreview = 1
@@ -329,6 +334,11 @@ lua <<EOF
 require'nvim_lsp'.tsserver.setup{}
 EOF
 
+" Set up Clojure LSP support
+lua <<EOF
+require'nvim_lsp'.clojure_lsp.setup{}
+EOF
+
 " View type information
 nnoremap <silent>K     <cmd>lua vim.lsp.buf.hover()<CR>
 
@@ -341,6 +351,7 @@ set signcolumn=yes
 """ TODO: Verify this works how we want it to.
 augroup ALEAutocompleteOFF 
   autocmd FileType javascript let g:ale_disable_lsp = 1
+  autocmd FileType clojure let g:ale_disable_lsp = 1
 augroup END
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END vim-lsp Specific Settings
@@ -410,49 +421,64 @@ set laststatus=2
 """"""""""""""""""""""""""" START Treesitter Specific Settings
 """"""""""""""""""""""""""" 
 " Enable it all
-lua <<EOF
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "javascript", "typescript", "go", "json" },
-  highlight = {
-    enable = true,
-  },
-  refactor = {
-    -- Highlighting definitions doesn't seem to work inside JS the way I'd expect.
-    -- highlight_definitions = { enable = true },
-    highlight_current_scope = { enable = true },
-    smart_rename = {
-      enable = true,
-      keymaps = {
-        smart_rename = "<leader>r",
-      },
-    },
-    navigation = {
-      enable = true,
-      keymaps = {
-        goto_definition = "<leader>dd",
-        list_definitions = "<leader>dl",
-        goto_next_usage = "<a-j>",
-        goto_previous_usage = "<a-k>",
-      },
-    },
-  },
-  textobjects = {
-    select = {
-      enable = true,
-      keymaps = {
-        -- You can use the capture groups defined in textobjects.scm
-        ["af"] = "@function.outer",
-        ["if"] = "@function.inner",
-        -- Not really useful on how we use JS
-        -- ["ac"] = "@class.outer",
-        -- ["ic"] = "@class.inner",
-      },
-    },
-  },
-}
-EOF
+" lua <<EOF
+" require'nvim-treesitter.configs'.setup {
+"   ensure_installed = { "javascript", "typescript", "go", "json" },
+"   highlight = {
+"     enable = true,
+"   },
+"   refactor = {
+"     -- Highlighting definitions doesn't seem to work inside JS the way I'd expect. :thinking:
+"     highlight_definitions = { enable = true },
+"     -- highlight_current_scope = { enable = true },
+"     smart_rename = {
+"       enable = true,
+"       keymaps = {
+"         smart_rename = "<leader>r",
+"       },
+"     },
+"     navigation = {
+"       enable = true,
+"       keymaps = {
+"         goto_definition = "<leader>dd",
+"         list_definitions = "<leader>dl",
+"         goto_next_usage = "<a-j>",
+"         goto_previous_usage = "<a-k>",
+"       },
+"     },
+"   },
+"   textobjects = {
+"     select = {
+"       enable = true,
+"       keymaps = {
+"         -- You can use the capture groups defined in textobjects.scm
+"         ["af"] = "@function.outer",
+"         ["if"] = "@function.inner",
+"         -- Not really useful on how we use JS
+"         -- ["ac"] = "@class.outer",
+"         -- ["ic"] = "@class.inner",
+"       },
+"     },
+"   },
+" }
+" EOF
 
-map <leader><C-r> :write<CR>  :edit<CR> :TSBufEnable highlight<CR>
+" map <leader><C-r> :write <bar> edit <bar> TSBufEnable highlight<CR>
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Treesitter Specific Settings
+""""""""""""""""""""""""""" 
+
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START Iced Specific Settings
+""""""""""""""""""""""""""" 
+let g:iced_enable_default_key_mappings = v:true
+
+augroup IcedFormattingOnSave
+  autocmd!
+  autocmd BufWritePre *.clj :IcedFormatAll
+augroup END
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END Iced Specific Settings
 """"""""""""""""""""""""""" 
