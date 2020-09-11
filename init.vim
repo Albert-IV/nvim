@@ -473,12 +473,11 @@ set laststatus=2
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" START Iced Specific Settings
 """"""""""""""""""""""""""" 
+" Enable all the default mappings
 let g:iced_enable_default_key_mappings = v:true
-
-augroup IcedFormattingOnSave
-  autocmd!
-  autocmd BufWritePre *.clj :IcedFormatAll
-augroup END
+" Make formatting as easy as possible. Formatting on save 
+" marks the file as needing to save, which is not great.
+map <leader><c><f> :IcedFormatAll
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Iced Specific Settings
 """"""""""""""""""""""""""" 
