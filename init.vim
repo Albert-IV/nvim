@@ -52,15 +52,22 @@ call plug#end()
 " END PLUGINS
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-" Theme settings
+" Theme settings.  Set later in the config, but this is needed for the edge
+" colortheme
 if (has("termguicolors"))
   set termguicolors
 endif
 
 let g:edge_style = 'default'
+
+" Italics for comments, no italics for code
 let g:edge_enable_italic = 0
 let g:edge_disable_italic_comment = 0
+
+" Let tmux coloring come through (IE highlight active panes
 let g:edge_transparent_background = 1
+
+" Enables plugin-specific code diagnostics
 let g:edge_diagnostic_line_highlight = 1
 
 colorscheme edge
