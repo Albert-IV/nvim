@@ -7,7 +7,8 @@ call plug#begin(stdpath('config') . '/plugged')
 " Color Scheme(s) / Themes / Status Lines
 """"""""""""""""""""""""""""""""""""""""""""""""""
 Plug 'junegunn/seoul256.vim'
-Plug 'morhetz/gruvbox'
+Plug 'sainnhe/edge'
+
 Plug 'rbong/vim-crystalline'
 Plug 'luochen1990/rainbow'
 
@@ -33,7 +34,7 @@ Plug 'tpope/vim-commentary'
 Plug 'dense-analysis/ale'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Shougo/deoplete-lsp'
-" Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'nvim-treesitter/nvim-treesitter'
 
 " Javascript
 Plug 'prettier/vim-prettier'
@@ -52,10 +53,17 @@ call plug#end()
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 " Theme settings
-set background=dark
-let g:gruvbox_italic=1
-let g:gruvbox_contrast_dark='hard'
-colo gruvbox
+if (has("termguicolors"))
+  set termguicolors
+endif
+
+let g:edge_style = 'default'
+let g:edge_enable_italic = 0
+let g:edge_disable_italic_comment = 0
+let g:edge_transparent_background = 1
+let g:edge_diagnostic_line_highlight = 1
+
+colorscheme edge
 
 " General settings
 syntax on
@@ -158,9 +166,9 @@ if (empty($TMUX))
   if (has("nvim"))
   let $NVIM_TUI_ENABLE_TRUE_COLOR=1
   endif
-  if (has("termguicolors"))
-    set termguicolors
-  endif
+  " if (has("termguicolors"))
+  "   set termguicolors
+  " endif
 endif
 
 
@@ -339,6 +347,11 @@ lua <<EOF
 require'nvim_lsp'.clojure_lsp.setup{}
 EOF
 
+" Set up Haskell LSP support
+lua << EOF
+require'nvim_lsp'.ghcide.setup{}
+EOF
+
 " View type information
 nnoremap <silent>K     <cmd>lua vim.lsp.buf.hover()<CR>
 
@@ -421,49 +434,49 @@ set laststatus=2
 """"""""""""""""""""""""""" START Treesitter Specific Settings
 """"""""""""""""""""""""""" 
 " Enable it all
-" lua <<EOF
-" require'nvim-treesitter.configs'.setup {
-"   ensure_installed = { "javascript", "typescript", "go", "json" },
-"   highlight = {
-"     enable = true,
-"   },
-"   refactor = {
-"     -- Highlighting definitions doesn't seem to work inside JS the way I'd expect. :thinking:
-"     highlight_definitions = { enable = true },
-"     -- highlight_current_scope = { enable = true },
-"     smart_rename = {
-"       enable = true,
-"       keymaps = {
-"         smart_rename = "<leader>r",
-"       },
-"     },
-"     navigation = {
-"       enable = true,
-"       keymaps = {
-"         goto_definition = "<leader>dd",
-"         list_definitions = "<leader>dl",
-"         goto_next_usage = "<a-j>",
-"         goto_previous_usage = "<a-k>",
-"       },
-"     },
-"   },
-"   textobjects = {
-"     select = {
-"       enable = true,
-"       keymaps = {
-"         -- You can use the capture groups defined in textobjects.scm
-"         ["af"] = "@function.outer",
-"         ["if"] = "@function.inner",
-"         -- Not really useful on how we use JS
-"         -- ["ac"] = "@class.outer",
-"         -- ["ic"] = "@class.inner",
-"       },
-"     },
-"   },
-" }
-" EOF
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "javascript", "typescript", "go", "json" },
+  highlight = {
+    enable = true,
+  },
+  refactor = {
+    -- Highlighting definitions doesn't seem to work inside JS the way I'd expect. :thinking:
+    highlight_definitions = { enable = true },
+    -- highlight_current_scope = { enable = true },
+    smart_rename = {
+      enable = true,
+      keymaps = {
+        smart_rename = "<leader>r",
+      },
+    },
+    navigation = {
+      enable = true,
+      keymaps = {
+        goto_definition = "<leader>dd",
+        list_definitions = "<leader>dl",
+        goto_next_usage = "<a-j>",
+        goto_previous_usage = "<a-k>",
+      },
+    },
+  },
+  textobjects = {
+    select = {
+      enable = true,
+      keymaps = {
+        -- You can use the capture groups defined in textobjects.scm
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        -- Not really useful on how we use JS
+        -- ["ac"] = "@class.outer",
+        -- ["ic"] = "@class.inner",
+      },
+    },
+  },
+}
+EOF
 
-" map <leader><C-r> :write <bar> edit <bar> TSBufEnable highlight<CR>
+map <leader><C-r> :write <bar> edit <bar> TSBufEnable highlight<CR>
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Treesitter Specific Settings
 """"""""""""""""""""""""""" 
