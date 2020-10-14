@@ -32,9 +32,15 @@ Plug 'neovim/nvim-lsp'
 " General Languages
 Plug 'tpope/vim-commentary'
 Plug 'dense-analysis/ale'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'Shougo/deoplete-lsp'
+Plug 'nvim-lua/completion-nvim'
+Plug 'haorenW1025/completion-nvim'
 Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'nvim-treesitter/completion-treesitter'
+Plug 'codota/tabnine-vim'
+Plug 'aca/completion-tabnine', { 'do': './install.sh' }
+" Old autocomplete
+" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'Shougo/deoplete-lsp'
 
 " Javascript
 Plug 'prettier/vim-prettier'
@@ -68,7 +74,7 @@ let g:edge_disable_italic_comment = 0
 let g:edge_transparent_background = 1
 
 " Enables plugin-specific code diagnostics
-let g:edge_diagnostic_line_highlight = 1
+let g:edge_diagnostic_line_highlight = 0
 
 colorscheme edge
 
@@ -178,7 +184,7 @@ if (empty($TMUX))
   " endif
 endif
 
-
+" use tab / shift tab to go through autocomplete options
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
@@ -346,17 +352,17 @@ let g:ackpreview = 1
 """"""""""""""""""""""""""" 
 " Sets up TS server LSP with default options
 lua <<EOF
-require'nvim_lsp'.tsserver.setup{}
+require'nvim_lsp'.tsserver.setup{on_attach=require'completion'.on_attach}
 EOF
 
 " Set up Clojure LSP support
 lua <<EOF
-require'nvim_lsp'.clojure_lsp.setup{}
+require'nvim_lsp'.clojure_lsp.setup{on_attach=require'completion'.on_attach}
 EOF
 
 " Set up Haskell LSP support
 lua << EOF
-require'nvim_lsp'.ghcide.setup{}
+require'nvim_lsp'.ghcide.setup{on_attach=require'completion'.on_attach}
 EOF
 
 " View type information
@@ -371,7 +377,10 @@ set signcolumn=yes
 """ TODO: Verify this works how we want it to.
 augroup ALEAutocompleteOFF 
   autocmd FileType javascript let g:ale_disable_lsp = 1
+  autocmd FileType typescript let g:ale_disable_lsp = 1
+  autocmd FileType javascriptreact let g:ale_disable_lsp = 1
   autocmd FileType clojure let g:ale_disable_lsp = 1
+  autocmd FileType haskell let g:ale_disable_lsp = 1
 augroup END
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END vim-lsp Specific Settings
@@ -383,7 +392,7 @@ augroup END
 """"""""""""""""""""""""""" START Deoplete Specific Settings
 """"""""""""""""""""""""""" 
 " Enable Deoplete
-let g:deoplete#enable_at_startup = 1
+" let g:deoplete#enable_at_startup = 1
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Deoplete Specific Settings
 """"""""""""""""""""""""""" 
@@ -500,4 +509,67 @@ let g:iced_enable_default_key_mappings = v:true
 map <leader><c><f> :IcedFormatAll
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Iced Specific Settings
+""""""""""""""""""""""""""" 
+
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START completion-nvim Specific Settings
+""""""""""""""""""""""""""" 
+" NOTE: the nvim LSP section has settings to hook into the completion-nvim
+" library. Check the LSP section for `on_attach=require'completion'.on_attach`
+
+" Use completion-nvim in every buffer
+augroup CompletionNvimInit
+  autocmd BufEnter * lua require'completion'.on_attach()
+augroup END
+
+" Set completeopt to have a better completion experience
+set completeopt=menuone,noinsert,noselect
+
+" Avoid showing message extra message when using completion
+set shortmess+=c
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END completion-nvim Specific Settings
+""""""""""""""""""""""""""" 
+
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START completion-treesitter Specific Settings
+""""""""""""""""""""""""""" 
+" Configure the completion chains
+let g:completion_chain_complete_list = {
+			\'default' : {
+			\	'default' : [
+			\		{'complete_items' : ['lsp', 'snippet']},
+			\		{'mode' : 'file'}
+			\	],
+			\	'comment' : [],
+			\	'string' : []
+			\	},
+			\'clojure' : [
+			\	{'complete_items': ['ts',  'tabnine', 'lsp']}
+			\	],
+			\'haskell' : [
+			\	{'complete_items': ['ts',  'tabnine', 'lsp']}
+			\	],
+			\'javascript' : [
+			\	{'complete_items': ['ts',  'tabnine', 'lsp']}
+			\	],
+			\'javascriptreact' : [
+			\	{'complete_items': ['ts',  'tabnine', 'lsp']}
+			\	],
+			\'typescript' : [
+			\	{'complete_items': ['ts',  'tabnine', 'lsp']}
+			\	],
+			\'vim' : [
+			\	{'complete_items': ['snippet']},
+			\	{'mode' : 'cmd'}
+			\	],
+			\}
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END completion-treesitter Specific Settings
 """"""""""""""""""""""""""" 
