@@ -33,14 +33,14 @@ Plug 'neovim/nvim-lsp'
 Plug 'tpope/vim-commentary'
 Plug 'dense-analysis/ale'
 Plug 'nvim-lua/completion-nvim'
-Plug 'haorenW1025/completion-nvim'
-Plug 'nvim-treesitter/nvim-treesitter'
-Plug 'nvim-treesitter/completion-treesitter'
-Plug 'codota/tabnine-vim'
-Plug 'aca/completion-tabnine', { 'do': './install.sh' }
+" Plug 'nvim-treesitter/nvim-treesitter'
+" Plug 'haorenW1025/completion-nvim'
+" Plug 'nvim-treesitter/completion-treesitter'
+" Plug 'codota/tabnine-vim'
+" Plug 'aca/completion-tabnine', { 'do': './install.sh' }
 " Old autocomplete
-" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-" Plug 'Shougo/deoplete-lsp'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'Shougo/deoplete-lsp'
 
 " Javascript
 Plug 'prettier/vim-prettier'
@@ -211,6 +211,9 @@ augroup LuaHighlight
   autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank()
 augroup END
 
+" Ensure autocomplete doesn't trigger a scratch buffer
+set completeopt-=preview
+
 
 
 
@@ -352,17 +355,17 @@ let g:ackpreview = 1
 """"""""""""""""""""""""""" 
 " Sets up TS server LSP with default options
 lua <<EOF
-require'nvim_lsp'.tsserver.setup{on_attach=require'completion'.on_attach}
+require'nvim_lsp'.tsserver.setup{}
 EOF
 
 " Set up Clojure LSP support
 lua <<EOF
-require'nvim_lsp'.clojure_lsp.setup{on_attach=require'completion'.on_attach}
+require'nvim_lsp'.clojure_lsp.setup{}
 EOF
 
 " Set up Haskell LSP support
 lua << EOF
-require'nvim_lsp'.ghcide.setup{on_attach=require'completion'.on_attach}
+require'nvim_lsp'.ghcide.setup{}
 EOF
 
 " View type information
@@ -392,7 +395,7 @@ augroup END
 """"""""""""""""""""""""""" START Deoplete Specific Settings
 """"""""""""""""""""""""""" 
 " Enable Deoplete
-" let g:deoplete#enable_at_startup = 1
+let g:deoplete#enable_at_startup = 1
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Deoplete Specific Settings
 """"""""""""""""""""""""""" 
@@ -450,49 +453,49 @@ set laststatus=2
 """"""""""""""""""""""""""" START Treesitter Specific Settings
 """"""""""""""""""""""""""" 
 " Enable it all
-lua <<EOF
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "javascript", "typescript", "go", "json" },
-  highlight = {
-    enable = true,
-  },
-  refactor = {
-    -- Highlighting definitions doesn't seem to work inside JS the way I'd expect. :thinking:
-    highlight_definitions = { enable = true },
-    -- highlight_current_scope = { enable = true },
-    smart_rename = {
-      enable = true,
-      keymaps = {
-        smart_rename = "<leader>r",
-      },
-    },
-    navigation = {
-      enable = true,
-      keymaps = {
-        goto_definition = "<leader>dd",
-        list_definitions = "<leader>dl",
-        goto_next_usage = "<a-j>",
-        goto_previous_usage = "<a-k>",
-      },
-    },
-  },
-  textobjects = {
-    select = {
-      enable = true,
-      keymaps = {
-        -- You can use the capture groups defined in textobjects.scm
-        ["af"] = "@function.outer",
-        ["if"] = "@function.inner",
-        -- Not really useful on how we use JS
-        -- ["ac"] = "@class.outer",
-        -- ["ic"] = "@class.inner",
-      },
-    },
-  },
-}
-EOF
+" lua <<EOF
+" require'nvim-treesitter.configs'.setup {
+"   ensure_installed = { "javascript", "typescript", "go", "json" },
+"   highlight = {
+"     enable = true,
+"   },
+"   refactor = {
+"     -- Highlighting definitions doesn't seem to work inside JS the way I'd expect. :thinking:
+"     highlight_definitions = { enable = true },
+"     -- highlight_current_scope = { enable = true },
+"     smart_rename = {
+"       enable = true,
+"       keymaps = {
+"         smart_rename = "<leader>r",
+"       },
+"     },
+"     navigation = {
+"       enable = true,
+"       keymaps = {
+"         goto_definition = "<leader>dd",
+"         list_definitions = "<leader>dl",
+"         goto_next_usage = "<a-j>",
+"         goto_previous_usage = "<a-k>",
+"       },
+"     },
+"   },
+"   textobjects = {
+"     select = {
+"       enable = true,
+"       keymaps = {
+"         -- You can use the capture groups defined in textobjects.scm
+"         ["af"] = "@function.outer",
+"         ["if"] = "@function.inner",
+"         -- Not really useful on how we use JS
+"         -- ["ac"] = "@class.outer",
+"         -- ["ic"] = "@class.inner",
+"       },
+"     },
+"   },
+" }
+" EOF
 
-map <leader><C-r> :write <bar> edit <bar> TSBufEnable highlight<CR>
+" map <leader><C-r> :write <bar> edit <bar> TSBufEnable highlight<CR>
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Treesitter Specific Settings
 """"""""""""""""""""""""""" 
@@ -516,19 +519,19 @@ map <leader><c><f> :IcedFormatAll
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" START completion-nvim Specific Settings
 """"""""""""""""""""""""""" 
-" NOTE: the nvim LSP section has settings to hook into the completion-nvim
-" library. Check the LSP section for `on_attach=require'completion'.on_attach`
+" " NOTE: the nvim LSP section has settings to hook into the completion-nvim
+" " library. Check the LSP section for `on_attach=require'completion'.on_attach`
 
-" Use completion-nvim in every buffer
-augroup CompletionNvimInit
-  autocmd BufEnter * lua require'completion'.on_attach()
-augroup END
+" " Use completion-nvim in every buffer
+" augroup CompletionNvimInit
+"   autocmd BufEnter * lua require'completion'.on_attach()
+" augroup END
 
-" Set completeopt to have a better completion experience
-set completeopt=menuone,noinsert,noselect
+" " Set completeopt to have a better completion experience
+" set completeopt=menuone,noinsert,noselect
 
-" Avoid showing message extra message when using completion
-set shortmess+=c
+" " Avoid showing message extra message when using completion
+" set shortmess+=c
 
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END completion-nvim Specific Settings
@@ -540,35 +543,35 @@ set shortmess+=c
 """"""""""""""""""""""""""" START completion-treesitter Specific Settings
 """"""""""""""""""""""""""" 
 " Configure the completion chains
-let g:completion_chain_complete_list = {
-			\'default' : {
-			\	'default' : [
-			\		{'complete_items' : ['lsp', 'snippet']},
-			\		{'mode' : 'file'}
-			\	],
-			\	'comment' : [],
-			\	'string' : []
-			\	},
-			\'clojure' : [
-			\	{'complete_items': ['ts',  'tabnine', 'lsp']}
-			\	],
-			\'haskell' : [
-			\	{'complete_items': ['ts',  'tabnine', 'lsp']}
-			\	],
-			\'javascript' : [
-			\	{'complete_items': ['ts',  'tabnine', 'lsp']}
-			\	],
-			\'javascriptreact' : [
-			\	{'complete_items': ['ts',  'tabnine', 'lsp']}
-			\	],
-			\'typescript' : [
-			\	{'complete_items': ['ts',  'tabnine', 'lsp']}
-			\	],
-			\'vim' : [
-			\	{'complete_items': ['snippet']},
-			\	{'mode' : 'cmd'}
-			\	],
-			\}
+" let g:completion_chain_complete_list = {
+" 			\'default' : {
+" 			\	'default' : [
+" 			\		{'complete_items' : ['lsp', 'snippet']},
+" 			\		{'mode' : 'file'}
+" 			\	],
+" 			\	'comment' : [],
+" 			\	'string' : []
+" 			\	},
+" 			\'clojure' : [
+" 			\	{'complete_items': ['ts', 'lsp']}
+" 			\	],
+" 			\'haskell' : [
+" 			\	{'complete_items': ['ts', 'lsp']}
+" 			\	],
+" 			\'javascript' : [
+" 			\	{'complete_items': ['ts', 'lsp']}
+" 			\	],
+" 			\'javascriptreact' : [
+" 			\	{'complete_items': ['ts', 'lsp']}
+" 			\	],
+" 			\'typescript' : [
+" 			\	{'complete_items': ['ts', 'lsp']}
+" 			\	],
+" 			\'vim' : [
+" 			\	{'complete_items': ['snippet']},
+" 			\	{'mode' : 'cmd'}
+" 			\	],
+" 			\}
 
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END completion-treesitter Specific Settings
