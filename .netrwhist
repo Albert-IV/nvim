@@ -1,5 +1,6 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhistcnt =5
+let g:netrw_dirhistcnt =6
+let g:netrw_dirhist_6='/Users/aenge3/code/mon.street/vector-stewardship/src/db'
 let g:netrw_dirhist_5='/Users/alberte/.config/nvim'
 let g:netrw_dirhist_4='/Users/alberte/.config/nvim/colors'
 let g:netrw_dirhist_3='/Users/alberte/.config/nvim'

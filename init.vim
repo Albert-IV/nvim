@@ -1,4 +1,3 @@
-" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " START PLUGINS
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 call plug#begin(stdpath('config') . '/plugged')
@@ -20,10 +19,16 @@ Plug 'preservim/nerdtree'
 Plug 'lambdalisue/suda.vim'
 Plug 'mbbill/undotree'
 Plug 'tpope/vim-obsession'
-Plug 'vim-ctrlspace/vim-ctrlspace'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'mileszs/ack.vim'
+" Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'neovim/nvim-lsp'
+Plug 'godlygeek/tabular'
+Plug 'mattboehm/vim-accordion'
+
+" Telescope
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " Language Specific
@@ -32,15 +37,25 @@ Plug 'neovim/nvim-lsp'
 " General Languages
 Plug 'tpope/vim-commentary'
 Plug 'dense-analysis/ale'
-Plug 'nvim-lua/completion-nvim'
+" Plug 'nvim-lua/completion-nvim'
 " Plug 'nvim-treesitter/nvim-treesitter'
+" Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+" Plug 'nvim-treesitter/nvim-treesitter-refactor'
+
+" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+" Autocomplete
+" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Plug 'hrsh7th/nvim-compe'
+
+" completion-nvim
 " Plug 'haorenW1025/completion-nvim'
 " Plug 'nvim-treesitter/completion-treesitter'
 " Plug 'codota/tabnine-vim'
 " Plug 'aca/completion-tabnine', { 'do': './install.sh' }
+
 " Old autocomplete
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'Shougo/deoplete-lsp'
+" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'Shougo/deoplete-lsp'
 
 " Javascript
 Plug 'prettier/vim-prettier'
@@ -50,7 +65,7 @@ Plug 'guns/vim-sexp',    {'for': 'clojure'}
 Plug 'liquidz/vim-iced', {'for': 'clojure'}
 
 " CSS
-Plug 'ap/vim-css-color'
+" Plug 'ap/vim-css-color'
 
 " Wrap up so we can use the plugins later in our config
 call plug#end()
@@ -97,6 +112,17 @@ set tabstop=2 softtabstop=0 expandtab shiftwidth=2 smarttab
 augroup ElmIndentation
   autocmd!
   autocmd FileType elm setlocal shiftwidth=4 tabstop=4 smarttab
+augroup END
+
+" Set up backticks as matching pairs in Javascript
+augroup JavaScriptTemplating
+  " This doesn't work... 
+  " autocmd FileType javascript set mps+=`:`
+
+  " Doesn't work either RIP
+  " if exists("b:match_words") | 
+  "   autocmd FileType javascript let b:match_words=b:match_words.',`:`' |
+  " endif
 augroup END
 
 " Enable transparent tooltips
@@ -192,7 +218,7 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 set wildmenu
 set wildmode=full
 
-" Make VIM remeber more previously ran commands
+" Make VIM remember more previously ran commands
 set history=1000
 
 " Ensure when editing crontab entries you're able to save:
@@ -214,6 +240,9 @@ augroup END
 " Ensure autocomplete doesn't trigger a scratch buffer
 set completeopt-=preview
 
+" Set folding to use syntax rather than manual...
+set foldmethod=syntax
+set nofoldenable
 
 
 
@@ -281,26 +310,13 @@ nnoremap <F5> :UndotreeToggle<cr>
 augroup AutomaticPrettier
   autocmd!
   autocmd BufWritePre,FileWritePre,FileAppendPre *.js :Prettier
+  autocmd BufWritePre,FileWritePre,FileAppendPre *.mjs :Prettier
   autocmd BufWritePre,FileWritePre,FileAppendPre *.jsx :Prettier
+  autocmd BufWritePre,FileWritePre,FileAppendPre *.tsx :Prettier
   autocmd BufWritePre,FileWritePre,FileAppendPre *.ts :Prettier
 augroup END
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Prettier Specific Settings
-""""""""""""""""""""""""""" 
-
-
-
-""""""""""""""""""""""""""" 
-""""""""""""""""""""""""""" START CtrlSpace Specific Settings
-""""""""""""""""""""""""""" 
-set nocompatible
-set showtabline=0
-let g:CtrlSpaceDefaultMappingKey = "<C-space> "
-let g:CtrlSpaceLoadLastWorkspaceOnStart = 1
-let g:CtrlSpaceSaveWorkspaceOnSwitch = 1
-let g:CtrlSpaceSaveWorkspaceOnExit = 1
-""""""""""""""""""""""""""" 
-""""""""""""""""""""""""""" END CtrlSpace Specific Settings
 """"""""""""""""""""""""""" 
 
 
@@ -320,12 +336,12 @@ let g:rainbow_active = 1
 """"""""""""""""""""""""""" 
 " Shoutout to this nice blog post:
 " https://www.erickpatrick.net/blog/adding-syntax-highlighting-to-fzf.vim-preview-window
-let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
-let $FZF_DEFAULT_COMMAND = 'rg --files --ignore-case --hidden -g "!{.git,node_modules,vendor}/*"'
-command! -bang -nargs=? -complete=dir Files
-     \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
-let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
-nnoremap <C-p> :<C-u>FZF<CR> 
+" let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
+" let $FZF_DEFAULT_COMMAND = 'rg --files --ignore-case --hidden -g "!{.git,node_modules,vendor}/*"'
+" command! -bang -nargs=? -complete=dir Files
+"      \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+" let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
+" nnoremap <C-p> :<C-u>FZF<CR> 
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END FZF Specific Settings
 """"""""""""""""""""""""""" 
@@ -343,7 +359,8 @@ nnoremap <Leader>f :Ack!<Space>""<Left>
 nnoremap <Leader>F :Ack!<CR>
 let g:ack_autoclose = 1
 let g:ackhighlight = 1
-let g:ackpreview = 1
+let g:ackpreview = 0
+let g:ack_autofold_results = 1
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END ack Specific Settings
 """"""""""""""""""""""""""" 
@@ -355,21 +372,22 @@ let g:ackpreview = 1
 """"""""""""""""""""""""""" 
 " Sets up TS server LSP with default options
 lua <<EOF
-require'nvim_lsp'.tsserver.setup{}
+require'lspconfig'.tsserver.setup{}
 EOF
 
-" Set up Clojure LSP support
-lua <<EOF
-require'nvim_lsp'.clojure_lsp.setup{}
-EOF
+" " Set up Clojure LSP support
+" lua <<EOF
+" require'lspconfig'.clojure_lsp.setup{}
+" EOF
 
-" Set up Haskell LSP support
-lua << EOF
-require'nvim_lsp'.ghcide.setup{}
-EOF
+" " Set up Haskell LSP support
+" lua << EOF
+" require'lspconfig'.ghcide.setup{}
+" EOF
 
-" View type information
-nnoremap <silent>K     <cmd>lua vim.lsp.buf.hover()<CR>
+" Handy bits to interact with LSP
+nnoremap <silent>K          <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent><leader>?  <cmd>lua vim.lsp.buf.code_action()<CR>
 
 " View where the function was defined
 nnoremap <silent>gd    <cmd>lua vim.lsp.buf.definition()<CR>
@@ -382,8 +400,8 @@ augroup ALEAutocompleteOFF
   autocmd FileType javascript let g:ale_disable_lsp = 1
   autocmd FileType typescript let g:ale_disable_lsp = 1
   autocmd FileType javascriptreact let g:ale_disable_lsp = 1
-  autocmd FileType clojure let g:ale_disable_lsp = 1
-  autocmd FileType haskell let g:ale_disable_lsp = 1
+  " autocmd FileType clojure let g:ale_disable_lsp = 1
+  " autocmd FileType haskell let g:ale_disable_lsp = 1
 augroup END
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END vim-lsp Specific Settings
@@ -395,7 +413,7 @@ augroup END
 """"""""""""""""""""""""""" START Deoplete Specific Settings
 """"""""""""""""""""""""""" 
 " Enable Deoplete
-let g:deoplete#enable_at_startup = 1
+" let g:deoplete#enable_at_startup = 1
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Deoplete Specific Settings
 """"""""""""""""""""""""""" 
@@ -430,17 +448,17 @@ function! StatusLine(current, width)
   return l:s
 endfunction
 
-function! TabLine()
-  let l:vimlabel = has('nvim') ?  ' NVIM ' : ' VIM '
-  return crystalline#bufferline(2, len(l:vimlabel), 1) . '%=%#CrystallineTab# ' . l:vimlabel
-endfunction
+" function! TabLine()
+"   let l:vimlabel = has('nvim') ?  ' NVIM ' : ' VIM '
+"   return crystalline#bufferline(2, len(l:vimlabel), 1) . '%=%#CrystallineTab# ' . l:vimlabel
+" endfunction
 
 let g:crystalline_enable_sep = 1
 let g:crystalline_statusline_fn = 'StatusLine'
-let g:crystalline_tabline_fn = 'TabLine'
+" let g:crystalline_tabline_fn = 'TabLine'
 let g:crystalline_theme = 'default'
 
-set showtabline=2
+set showtabline=1
 set guioptions-=e
 set laststatus=2
 """"""""""""""""""""""""""" 
@@ -455,13 +473,13 @@ set laststatus=2
 " Enable it all
 " lua <<EOF
 " require'nvim-treesitter.configs'.setup {
-"   ensure_installed = { "javascript", "typescript", "go", "json" },
+"   ensure_installed = { "javascript", "json", "typescript" },
 "   highlight = {
 "     enable = true,
 "   },
 "   refactor = {
 "     -- Highlighting definitions doesn't seem to work inside JS the way I'd expect. :thinking:
-"     highlight_definitions = { enable = true },
+"     -- highlight_definitions = { enable = true },
 "     -- highlight_current_scope = { enable = true },
 "     smart_rename = {
 "       enable = true,
@@ -487,8 +505,8 @@ set laststatus=2
 "         ["af"] = "@function.outer",
 "         ["if"] = "@function.inner",
 "         -- Not really useful on how we use JS
-"         -- ["ac"] = "@class.outer",
-"         -- ["ic"] = "@class.inner",
+"         ["ac"] = "@class.outer",
+"         ["ic"] = "@class.inner"
 "       },
 "     },
 "   },
@@ -576,3 +594,127 @@ map <leader><c><f> :IcedFormatAll
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END completion-treesitter Specific Settings
 """"""""""""""""""""""""""" 
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START tabular Specific Settings
+""""""""""""""""""""""""""" 
+inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<CR>a
+
+function! s:align()
+  let p = '^\s*|\s.*\s|\s*$'
+  if exists(':Tabularize') && getline('.') =~# '^\s*|' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
+    let column = strlen(substitute(getline('.')[0:col('.')],'[^|]','','g'))
+    let position = strlen(matchstr(getline('.')[0:col('.')],'.*|\s*\zs.*'))
+    Tabularize/|/l1
+    normal! 0
+    call search(repeat('[^|]*|',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
+  endif
+endfunction
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END tabular Specific Settings
+""""""""""""""""""""""""""" 
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START telescope Specific Settings
+""""""""""""""""""""""""""" 
+nnoremap <C-p>      <cmd>lua require'telescope.builtin'.git_files()<CR>
+nnoremap <leader>p  <cmd>lua require'telescope.builtin'.find_files()<CR>
+
+lua <<EOF
+require('telescope').setup {
+  defaults = {
+    vimgrep_arguments = {
+      'rg',
+      '--color=never',
+      '--no-heading',
+      '--with-filename',
+      '--line-number',
+      '--column',
+      '--smart-case'
+    },
+    prompt_position = "bottom",
+    prompt_prefix = ">",
+    initial_mode = "insert",
+    selection_strategy = "reset",
+    sorting_strategy = "descending",
+    layout_strategy = "horizontal",
+    layout_defaults = {
+      -- TODO add builtin options.
+    },
+    -- file_sorter =  require'telescope.sorters'.get_fuzzy_file,
+    file_ignore_patterns = { 'package-lock.json' },
+    generic_sorter =  require'telescope.sorters'.get_generic_fuzzy_sorter,
+    shorten_path = true,
+    winblend = 0,
+    width = 0.75,
+    preview_cutoff = 120,
+    results_height = 1,
+    results_width = 0.8,
+    border = {},
+    borderchars = { '─', '│', '─', '│', '╭', '╮', '╯', '╰'},
+    color_devicons = true,
+    use_less = true,
+    set_env = { ['COLORTERM'] = 'truecolor' }, -- default { }, currently unsupported for shells like cmd.exe / powershell.exe
+    file_previewer = require'telescope.previewers'.cat.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_cat.new`
+    grep_previewer = require'telescope.previewers'.vimgrep.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_vimgrep.new`
+    qflist_previewer = require'telescope.previewers'.qflist.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_qflist.new`
+  }
+}
+EOF
+
+" Exit telescope when exiting insert mode
+lua <<EOF
+local actions = require('telescope.actions')
+require('telescope').setup{
+  defaults = {
+    mappings = {
+      i = {
+        ["<esc>"] = actions.close
+      },
+    },
+  }
+}
+EOF
+
+nnoremap <C-Space> :Telescope buffers<cr>
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END telescope Specific Settings
+""""""""""""""""""""""""""" 
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START nvim-compe Specific Settings
+""""""""""""""""""""""""""" 
+set completeopt=menuone,noselect
+
+lua <<EOF
+require'compe'.setup {
+  enabled = true,
+  autocomplete = true,
+  -- debug = false,
+  min_length = 1,
+  preselect = 'enable',
+  throttle_time = 80,
+  source_timeout = 200,
+  incomplete_delay = 400,
+  max_abbr_width = 100,
+  max_kind_width = 100,
+  max_menu_width = 100,
+  documentation = true,
+
+  source = {
+    path = true,
+    buffer = true,
+    calc = true,
+    nvim_lsp = true,
+    nvim_lua = true,
+    -- vsnip = true,
+    -- ultisnips = true,
+  };
+}
+EOF
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END nvim-compe Specific Settings
+""""""""""""""""""""""""""" 
+
