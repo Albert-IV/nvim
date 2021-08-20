@@ -15,13 +15,15 @@ Plug 'luochen1990/rainbow'
 " General Utilities
 """"""""""""""""""""""""""""""""""""""""""""""""""
 Plug 'machakann/vim-sandwich'
-Plug 'preservim/nerdtree'
+" Plug 'preservim/nerdtree'
+Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': 'python3 -m chadtree deps'}
 Plug 'lambdalisue/suda.vim'
 Plug 'mbbill/undotree'
 Plug 'tpope/vim-obsession'
 Plug 'mileszs/ack.vim'
 " Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'neovim/nvim-lsp'
+Plug 'ray-x/lsp_signature.nvim'
 Plug 'godlygeek/tabular'
 Plug 'mattboehm/vim-accordion'
 
@@ -256,20 +258,20 @@ set nofoldenable
 """"""""""""""""""""""""""" START NERDTree Specific Settings
 """"""""""""""""""""""""""" 
 " Autostart NERDTree
-augroup NERDTreeAutostart
-  autocmd!
-  autocmd StdinReadPre * let s:std_in=1
-  autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
-augroup END
+" augroup NERDTreeAutostart
+"   autocmd!
+"   autocmd StdinReadPre * let s:std_in=1
+"   autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
+" augroup END
 
-" Map Ctrl+N to opening / closing the file explorer
-map <C-n> :NERDTreeToggle<CR>
+" " Map Ctrl+N to opening / closing the file explorer
+" map <C-n> :NERDTreeToggle<CR>
 
-" Show hidden files
-let NERDTreeShowHidden=1      
+" " Show hidden files
+" let NERDTreeShowHidden=1      
 
-" Disables the "Press ? for help" dialog at the top of NERDTree
-let NERDTreeMinimalUI=1       
+" " Disables the "Press ? for help" dialog at the top of NERDTree
+" let NERDTreeMinimalUI=1       
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Nerdtree
 """"""""""""""""""""""""""" 
@@ -394,15 +396,6 @@ nnoremap <silent>gd    <cmd>lua vim.lsp.buf.definition()<CR>
 
 " Always show the sign gutter, since LSP will add to it as you type
 set signcolumn=yes
-
-""" TODO: Verify this works how we want it to.
-augroup ALEAutocompleteOFF 
-  autocmd FileType javascript let g:ale_disable_lsp = 1
-  autocmd FileType typescript let g:ale_disable_lsp = 1
-  autocmd FileType javascriptreact let g:ale_disable_lsp = 1
-  " autocmd FileType clojure let g:ale_disable_lsp = 1
-  " autocmd FileType haskell let g:ale_disable_lsp = 1
-augroup END
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END vim-lsp Specific Settings
 """"""""""""""""""""""""""" 
@@ -433,16 +426,22 @@ function! StatusLine(current, width)
     let l:s .= '%#CrystallineInactive#'
   endif
   let l:s .= ' %f%h%w%m%r '
+  " if a:current
+  "   let l:s .= crystalline#right_sep('', 'Fill') . ' %{fugitive#head()}'
+  " endif
 
   let l:s .= '%='
   if a:current
-    let l:s .= crystalline#left_sep('', 'Fill') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
+    let l:s .= crystalline#left_sep('', '') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
     let l:s .= crystalline#left_mode_sep('')
   endif
   if a:width > 80
     let l:s .= ' %{&ft}[%{&fenc!=#""?&fenc:&enc}][%{&ff}] %l/%L %c%V %P '
   else
     let l:s .= ' '
+  endif
+
+  return l:s
   endif
 
   return l:s
@@ -718,3 +717,32 @@ EOF
 """"""""""""""""""""""""""" END nvim-compe Specific Settings
 """"""""""""""""""""""""""" 
 
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START CHADtree Specific Settings
+""""""""""""""""""""""""""" 
+
+" Map Ctrl+N to opening / closing the file explorer
+map <C-n> :CHADopen<CR>
+
+" let g:chadtree_settings = { "theme.text_colour_set": "env" }
+
+" Chadtree tends to overwrite these settings, set it again after chadtree settings are done
+" set number
+" set signcolumn=yes
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END CHADtree Specific Settings
+""""""""""""""""""""""""""" 
+
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START lsp_signature Specific Settings
+""""""""""""""""""""""""""" 
+lua <<EOF
+require 'lsp_signature'.on_attach()
+EOF
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END lsp_signature Specific Settings
+""""""""""""""""""""""""""" 
