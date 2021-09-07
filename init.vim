@@ -15,8 +15,7 @@ Plug 'luochen1990/rainbow'
 " General Utilities
 """"""""""""""""""""""""""""""""""""""""""""""""""
 Plug 'machakann/vim-sandwich'
-" Plug 'preservim/nerdtree'
-Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': 'python3 -m chadtree deps'}
+Plug 'preservim/nerdtree'
 Plug 'lambdalisue/suda.vim'
 Plug 'mbbill/undotree'
 Plug 'tpope/vim-obsession'
@@ -258,20 +257,20 @@ set nofoldenable
 """"""""""""""""""""""""""" START NERDTree Specific Settings
 """"""""""""""""""""""""""" 
 " Autostart NERDTree
-" augroup NERDTreeAutostart
-"   autocmd!
-"   autocmd StdinReadPre * let s:std_in=1
-"   autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
-" augroup END
+augroup NERDTreeAutostart
+  autocmd!
+  autocmd StdinReadPre * let s:std_in=1
+  autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
+augroup END
 
-" " Map Ctrl+N to opening / closing the file explorer
-" map <C-n> :NERDTreeToggle<CR>
+" Map Ctrl+N to opening / closing the file explorer
+map <C-n> :NERDTreeToggle<CR>
 
-" " Show hidden files
-" let NERDTreeShowHidden=1      
+" Show hidden files
+let NERDTreeShowHidden=1      
 
-" " Disables the "Press ? for help" dialog at the top of NERDTree
-" let NERDTreeMinimalUI=1       
+" Disables the "Press ? for help" dialog at the top of NERDTree
+let NERDTreeMinimalUI=1       
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Nerdtree
 """"""""""""""""""""""""""" 
@@ -632,24 +631,15 @@ require('telescope').setup {
       '--column',
       '--smart-case'
     },
-    prompt_position = "bottom",
     prompt_prefix = ">",
     initial_mode = "insert",
     selection_strategy = "reset",
     sorting_strategy = "descending",
     layout_strategy = "horizontal",
-    layout_defaults = {
-      -- TODO add builtin options.
-    },
     -- file_sorter =  require'telescope.sorters'.get_fuzzy_file,
     file_ignore_patterns = { 'package-lock.json' },
     generic_sorter =  require'telescope.sorters'.get_generic_fuzzy_sorter,
-    shorten_path = true,
     winblend = 0,
-    width = 0.75,
-    preview_cutoff = 120,
-    results_height = 1,
-    results_width = 0.8,
     border = {},
     borderchars = { '─', '│', '─', '│', '╭', '╮', '╯', '╰'},
     color_devicons = true,
@@ -658,6 +648,13 @@ require('telescope').setup {
     file_previewer = require'telescope.previewers'.cat.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_cat.new`
     grep_previewer = require'telescope.previewers'.vimgrep.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_vimgrep.new`
     qflist_previewer = require'telescope.previewers'.qflist.new, -- For buffer previewer use `require'telescope.previewers'.vim_buffer_qflist.new`
+    path_display = {
+    },
+    layout_config = {
+      width = 0.75,
+      prompt_position = "bottom",
+      preview_cutoff = 120,
+    }
   }
 }
 EOF
@@ -715,24 +712,6 @@ require'compe'.setup {
 EOF
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END nvim-compe Specific Settings
-""""""""""""""""""""""""""" 
-
-
-
-""""""""""""""""""""""""""" 
-""""""""""""""""""""""""""" START CHADtree Specific Settings
-""""""""""""""""""""""""""" 
-
-" Map Ctrl+N to opening / closing the file explorer
-map <C-n> :CHADopen<CR>
-
-" let g:chadtree_settings = { "theme.text_colour_set": "env" }
-
-" Chadtree tends to overwrite these settings, set it again after chadtree settings are done
-" set number
-" set signcolumn=yes
-""""""""""""""""""""""""""" 
-""""""""""""""""""""""""""" END CHADtree Specific Settings
 """"""""""""""""""""""""""" 
 
 
