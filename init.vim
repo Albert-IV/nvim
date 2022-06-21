@@ -23,7 +23,7 @@ Plug 'mileszs/ack.vim'
 " Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'neovim/nvim-lsp'
 Plug 'ray-x/lsp_signature.nvim'
-Plug 'godlygeek/tabular'
+" Plug 'godlygeek/tabular'
 Plug 'mattboehm/vim-accordion'
 
 " Telescope
@@ -39,9 +39,12 @@ Plug 'nvim-telescope/telescope.nvim'
 Plug 'tpope/vim-commentary'
 Plug 'dense-analysis/ale'
 " Plug 'nvim-lua/completion-nvim'
-" Plug 'nvim-treesitter/nvim-treesitter'
-" Plug 'nvim-treesitter/nvim-treesitter-textobjects'
-" Plug 'nvim-treesitter/nvim-treesitter-refactor'
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+Plug 'nvim-treesitter/nvim-treesitter-refactor'
+
+" Coffeescript...
+Plug 'kchmck/vim-coffee-script'
 
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " Autocomplete
@@ -469,49 +472,49 @@ set laststatus=2
 """"""""""""""""""""""""""" START Treesitter Specific Settings
 """"""""""""""""""""""""""" 
 " Enable it all
-" lua <<EOF
-" require'nvim-treesitter.configs'.setup {
-"   ensure_installed = { "javascript", "json", "typescript" },
-"   highlight = {
-"     enable = true,
-"   },
-"   refactor = {
-"     -- Highlighting definitions doesn't seem to work inside JS the way I'd expect. :thinking:
-"     -- highlight_definitions = { enable = true },
-"     -- highlight_current_scope = { enable = true },
-"     smart_rename = {
-"       enable = true,
-"       keymaps = {
-"         smart_rename = "<leader>r",
-"       },
-"     },
-"     navigation = {
-"       enable = true,
-"       keymaps = {
-"         goto_definition = "<leader>dd",
-"         list_definitions = "<leader>dl",
-"         goto_next_usage = "<a-j>",
-"         goto_previous_usage = "<a-k>",
-"       },
-"     },
-"   },
-"   textobjects = {
-"     select = {
-"       enable = true,
-"       keymaps = {
-"         -- You can use the capture groups defined in textobjects.scm
-"         ["af"] = "@function.outer",
-"         ["if"] = "@function.inner",
-"         -- Not really useful on how we use JS
-"         ["ac"] = "@class.outer",
-"         ["ic"] = "@class.inner"
-"       },
-"     },
-"   },
-" }
-" EOF
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "javascript", "json", "typescript" },
+  highlight = {
+    enable = true,
+  },
+  refactor = {
+    -- Highlighting definitions doesn't seem to work inside JS the way I'd expect. :thinking:
+    -- highlight_definitions = { enable = true },
+    -- highlight_current_scope = { enable = true },
+    smart_rename = {
+      enable = true,
+      keymaps = {
+        smart_rename = "<leader>r",
+      },
+    },
+    navigation = {
+      enable = true,
+      keymaps = {
+        goto_definition = "<leader>dd",
+        list_definitions = "<leader>dl",
+        goto_next_usage = "<a-j>",
+        goto_previous_usage = "<a-k>",
+      },
+    },
+  },
+  textobjects = {
+    select = {
+      enable = true,
+      keymaps = {
+        -- You can use the capture groups defined in textobjects.scm
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        -- Not really useful on how we use JS
+        ["ac"] = "@class.outer",
+        ["ic"] = "@class.inner"
+      },
+    },
+  },
+}
+EOF
 
-" map <leader><C-r> :write <bar> edit <bar> TSBufEnable highlight<CR>
+map <leader><C-r> :write <bar> edit <bar> TSBufEnable highlight<CR>
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Treesitter Specific Settings
 """"""""""""""""""""""""""" 
