@@ -220,8 +220,8 @@ if (empty($TMUX))
 endif
 
 " use tab / shift tab to go through autocomplete options
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+" inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 " Set up autocomplete menu to resemble zsh
 set wildmenu
@@ -253,7 +253,9 @@ set completeopt-=preview
 set foldmethod=syntax
 set nofoldenable
 
-
+map <leader>s :lua vim.diagnostic.open_float()<CR>
+map <leader>d :lua vim.diagnostic.goto_next()<CR>
+map <leader>f :lua vim.diagnostic.goto_prev()<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""""" BEGIN PLUGIN SETTINGS """"""""""""""""""""""""""""""
