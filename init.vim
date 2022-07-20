@@ -25,6 +25,7 @@ Plug 'neovim/nvim-lsp'
 Plug 'ray-x/lsp_signature.nvim'
 " Plug 'godlygeek/tabular'
 Plug 'mattboehm/vim-accordion'
+Plug 'windwp/nvim-autopairs'
 
 " Telescope
 Plug 'nvim-lua/popup.nvim'
@@ -49,7 +50,11 @@ Plug 'kchmck/vim-coffee-script'
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " Autocomplete
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Plug 'hrsh7th/nvim-compe'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
 
 " completion-nvim
 " Plug 'haorenW1025/completion-nvim'
@@ -688,30 +693,27 @@ nnoremap <C-Space> :Telescope buffers<cr>
 set completeopt=menuone,noselect
 
 lua <<EOF
-require'compe'.setup {
-  enabled = true,
-  autocomplete = true,
-  -- debug = false,
-  min_length = 1,
-  preselect = 'enable',
-  throttle_time = 80,
-  source_timeout = 200,
-  incomplete_delay = 400,
-  max_abbr_width = 100,
-  max_kind_width = 100,
-  max_menu_width = 100,
-  documentation = true,
-
-  source = {
-    path = true,
-    buffer = true,
-    calc = true,
-    nvim_lsp = true,
-    nvim_lua = true,
-    -- vsnip = true,
-    -- ultisnips = true,
-  };
-}
+local cmp = require'cmp'
+cmp.setup({
+    window = {
+      completion = cmp.config.window.bordered(),
+      documentation = cmp.config.window.bordered(),
+    },
+    mapping = cmp.mapping.preset.insert({
+      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+      ['<C-f>'] = cmp.mapping.scroll_docs(4),
+      ['<C-Space>'] = cmp.mapping.complete(),
+      ['<C-e>'] = cmp.mapping.abort(),
+      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+      ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' }),
+      ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 's' }),
+    }),
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp' },
+    }, {
+      { name = 'buffer' },
+    })
+  })
 EOF
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END nvim-compe Specific Settings
@@ -727,4 +729,24 @@ require 'lsp_signature'.on_attach()
 EOF
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END lsp_signature Specific Settings
+""""""""""""""""""""""""""" 
+
+
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START nvim-autopairs Specific Settings
+""""""""""""""""""""""""""" 
+lua << EOF
+require("nvim-autopairs").setup {}
+
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+local cmp = require('cmp')
+cmp.event:on(
+  'confirm_done',
+  cmp_autopairs.on_confirm_done()
+)
+EOF
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END nvim-autopairs Specific Settings
 """"""""""""""""""""""""""" 
