@@ -20,12 +20,12 @@ Plug 'lambdalisue/suda.vim'
 Plug 'mbbill/undotree'
 Plug 'tpope/vim-obsession'
 Plug 'mileszs/ack.vim'
-" Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'neovim/nvim-lsp'
-Plug 'ray-x/lsp_signature.nvim'
-" Plug 'godlygeek/tabular'
 Plug 'mattboehm/vim-accordion'
-Plug 'windwp/nvim-autopairs'
+Plug 'lukas-reineke/indent-blankline.nvim'
+
+" Plug 'windwp/nvim-autopairs'
+Plug 'cohama/lexima.vim'
 
 " Telescope
 Plug 'nvim-lua/popup.nvim'
@@ -39,42 +39,30 @@ Plug 'nvim-telescope/telescope.nvim'
 " General Languages
 Plug 'tpope/vim-commentary'
 Plug 'dense-analysis/ale'
-" Plug 'nvim-lua/completion-nvim'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 Plug 'nvim-treesitter/nvim-treesitter-refactor'
 
-" Coffeescript...
-Plug 'kchmck/vim-coffee-script'
-
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " Autocomplete
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+" For luasnip users.
+Plug 'L3MON4D3/LuaSnip'
+Plug 'saadparwaiz1/cmp_luasnip'
+
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-omni'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp'
-
-" completion-nvim
-" Plug 'haorenW1025/completion-nvim'
-" Plug 'nvim-treesitter/completion-treesitter'
-" Plug 'codota/tabnine-vim'
-" Plug 'aca/completion-tabnine', { 'do': './install.sh' }
-
-" Old autocomplete
-" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-" Plug 'Shougo/deoplete-lsp'
 
 " Javascript
 Plug 'prettier/vim-prettier'
 
 " Clojure
-Plug 'guns/vim-sexp',    {'for': 'clojure'}
-Plug 'liquidz/vim-iced', {'for': 'clojure'}
-
-" CSS
-" Plug 'ap/vim-css-color'
+" Plug 'guns/vim-sexp',    {'for': 'clojure'}
+" Plug 'liquidz/vim-iced', {'for': 'clojure'}
 
 " Wrap up so we can use the plugins later in our config
 call plug#end()
@@ -159,6 +147,15 @@ set hidden
 " https://stackoverflow.com/questions/2287440/how-to-do-case-insensitive-search-in-vim
 set ignorecase
 set smartcase
+
+" Also make sure when searching that the cursor centers on screen
+" https://vim.fandom.com/wiki/Make_search_results_appear_in_the_middle_of_the_screen
+nnoremap n nzz
+nnoremap N Nzz
+nnoremap * *zz
+nnoremap # #zz
+nnoremap g* g*zz
+nnoremap g# g#zz
 
 " Map Cmd + jklh to change windows
 nnoremap <C-J> <C-W><C-J>
@@ -253,9 +250,17 @@ set completeopt-=preview
 set foldmethod=syntax
 set nofoldenable
 
-map <leader>s :lua vim.diagnostic.open_float()<CR>
-map <leader>d :lua vim.diagnostic.goto_next()<CR>
-map <leader>f :lua vim.diagnostic.goto_prev()<CR>
+" Set up shortcuts to dance around diagostics
+map <leader>v :lua vim.diagnostic.open_float()<CR>
+map <leader>, :lua vim.diagnostic.goto_next()<CR>
+map <leader>. :lua vim.diagnostic.goto_prev()<CR>
+
+
+" Fixes SQL autocompletion errors:
+" https://github.com/neovim/neovim/issues/14433
+" Default to static completion for SQL
+let g:omni_sql_default_compl_type = 'syntax'
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""""" BEGIN PLUGIN SETTINGS """"""""""""""""""""""""""""""
@@ -383,7 +388,14 @@ let g:ack_autofold_results = 1
 """"""""""""""""""""""""""" 
 " Sets up TS server LSP with default options
 lua <<EOF
-require'lspconfig'.tsserver.setup{}
+
+-- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+
+require'lspconfig'.tsserver.setup{
+  capabilities = capabilities,
+}
 EOF
 
 " " Set up Clojure LSP support
@@ -697,9 +709,15 @@ set completeopt=menuone,noselect
 lua <<EOF
 local cmp = require'cmp'
 cmp.setup({
+    snippet = {
+      -- REQUIRED - you must specify a snippet engine
+      expand = function(args)
+        require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+      end,
+    },
     window = {
-      completion = cmp.config.window.bordered(),
-      documentation = cmp.config.window.bordered(),
+      -- completion = cmp.config.window.bordered(),
+      -- documentation = cmp.config.window.bordered(),
     },
     mapping = cmp.mapping.preset.insert({
       ['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -712,10 +730,24 @@ cmp.setup({
     }),
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
-    }, {
+      { name = 'path' },
       { name = 'buffer' },
+      { name = 'luasnip' },
+      { name = 'omni' },
     })
   })
+
+cmp.setup.cmdline(':', {
+  sources = {
+    { name = 'cmdline' }
+  }
+})
+
+cmp.setup.cmdline('/', {
+  sources = {
+    { name = 'buffer' }
+  }
+})
 EOF
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END nvim-compe Specific Settings
@@ -726,9 +758,9 @@ EOF
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" START lsp_signature Specific Settings
 """"""""""""""""""""""""""" 
-lua <<EOF
-require 'lsp_signature'.on_attach()
-EOF
+" lua <<EOF
+" require 'lsp_signature'.on_attach()
+" EOF
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END lsp_signature Specific Settings
 """"""""""""""""""""""""""" 
@@ -737,18 +769,119 @@ EOF
 
 
 """"""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START LuaSnip Specific Settings
+""""""""""""""""""""""""""" 
+" press <Tab> to expand or jump in a snippet. These can also be mapped separately
+" via <Plug>luasnip-expand-snippet and <Plug>luasnip-jump-next.
+imap <silent><expr> <Tab> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<Tab>' 
+" -1 for jumping backwards.
+inoremap <silent> <S-Tab> <cmd>lua require'luasnip'.jump(-1)<Cr>
+
+snoremap <silent> <Tab> <cmd>lua require('luasnip').jump(1)<Cr>
+snoremap <silent> <S-Tab> <cmd>lua require('luasnip').jump(-1)<Cr>
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END LuaSnip Specific Settings
+""""""""""""""""""""""""""" 
+
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START vim-sandwich Specific Settings
+""""""""""""""""""""""""""" 
+" Make sure when using surround commands to not move cursor.
+call operator#sandwich#set('all', 'all', 'cursor', 'keep')
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END vim-sandwich Specific Settings
+""""""""""""""""""""""""""" 
+
+
+
+
+
+
+""""""""""""""""""""""""""" 
 """"""""""""""""""""""""""" START nvim-autopairs Specific Settings
 """"""""""""""""""""""""""" 
-lua << EOF
-require("nvim-autopairs").setup {}
+" lua << EOF
+" require("nvim-autopairs").setup {}
 
-local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-local cmp = require('cmp')
-cmp.event:on(
-  'confirm_done',
-  cmp_autopairs.on_confirm_done()
-)
-EOF
+" local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+" local cmp = require('cmp')
+" cmp.event:on(
+"   'confirm_done',
+"   cmp_autopairs.on_confirm_done()
+" )
+" EOF
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END nvim-autopairs Specific Settings
+""""""""""""""""""""""""""" 
+
+
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START indent-blankline.nvim Specific Settings
+""""""""""""""""""""""""""" 
+
+lua << EOF
+vim.opt.termguicolors = true
+-- vim.cmd [[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]]
+-- vim.cmd [[highlight IndentBlanklineIndent2 guifg=#E5C07B gui=nocombine]]
+-- vim.cmd [[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]]
+-- vim.cmd [[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]]
+-- vim.cmd [[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]]
+-- vim.cmd [[highlight IndentBlanklineIndent6 guifg=#C678DD gui=nocombine]]
+
+-- vim.opt.list = true
+-- vim.opt.listchars:append "space:⋅"
+-- vim.opt.listchars:append "eol:↴"
+
+require("indent_blankline").setup({
+  use_treesitter = true,
+  show_current_context = true,
+  show_current_context_start = true,
+  context_highlight_list = { "Blue" },
+  context_patterns = {
+    -- NOTE: indent-blankline's defaults
+    "class",
+    "^func",
+    "method",
+    "^if",
+    "while",
+    "for",
+    "with",
+    "try",
+    "except",
+    "arguments",
+    "argument_list",
+    "object",
+    "dictionary",
+    "element",
+    "table",
+    "tuple",
+
+    -- NOTE: better JavaScript/TypeScript support
+    "return_statement",
+    "statement_block",
+  },
+
+  bufname_exclude = { "" }, -- Disables the plugin in hover() popups and new files
+
+  char_highlight_list = { "VertSplit" },
+
+
+  -- space_char_blankline = " ",
+  -- char_highlight_list = {
+  --     "IndentBlanklineIndent1",
+  --     "IndentBlanklineIndent2",
+  --     "IndentBlanklineIndent3",
+  --     "IndentBlanklineIndent4",
+  --     "IndentBlanklineIndent5",
+  --     "IndentBlanklineIndent6",
+  -- },
+})
+EOF
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END indent-blankline.nvim Specific Settings
 """"""""""""""""""""""""""" 
