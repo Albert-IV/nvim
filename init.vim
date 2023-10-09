@@ -36,6 +36,9 @@ Plug 'nvim-telescope/telescope.nvim'
 " Language Specific
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+" Typescript
+Plug 'jose-elias-alvarez/typescript.nvim'
+
 " General Languages
 Plug 'tpope/vim-commentary'
 Plug 'dense-analysis/ale'
@@ -46,7 +49,10 @@ Plug 'nvim-treesitter/nvim-treesitter-refactor'
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " Autocomplete
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-" For luasnip users.
+" JSDoc integration
+Plug 'danymat/neogen'
+
+" Luasnip for cmp plugin
 Plug 'L3MON4D3/LuaSnip'
 Plug 'saadparwaiz1/cmp_luasnip'
 
@@ -58,7 +64,8 @@ Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp'
 
 " Javascript
-Plug 'prettier/vim-prettier'
+" Plug 'prettier/vim-prettier'
+Plug 'sbdchd/neoformat'
 
 " Clojure
 " Plug 'guns/vim-sexp',    {'for': 'clojure'}
@@ -323,14 +330,14 @@ nnoremap <F5> :UndotreeToggle<cr>
 """"""""""""""""""""""""""" START Prettier Specific Settings
 """"""""""""""""""""""""""" 
 " Set it up so that Prettier runs on save for .js .jsx and .ts files
-augroup AutomaticPrettier
-  autocmd!
-  autocmd BufWritePre,FileWritePre,FileAppendPre *.js :Prettier
-  autocmd BufWritePre,FileWritePre,FileAppendPre *.mjs :Prettier
-  autocmd BufWritePre,FileWritePre,FileAppendPre *.jsx :Prettier
-  autocmd BufWritePre,FileWritePre,FileAppendPre *.tsx :Prettier
-  autocmd BufWritePre,FileWritePre,FileAppendPre *.ts :Prettier
-augroup END
+" augroup AutomaticPrettier
+"   autocmd!
+"   autocmd BufWritePre,FileWritePre,FileAppendPre *.js :Prettier
+"   autocmd BufWritePre,FileWritePre,FileAppendPre *.mjs :Prettier
+"   autocmd BufWritePre,FileWritePre,FileAppendPre *.jsx :Prettier
+"   autocmd BufWritePre,FileWritePre,FileAppendPre *.tsx :Prettier
+"   autocmd BufWritePre,FileWritePre,FileAppendPre *.ts :Prettier
+" augroup END
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Prettier Specific Settings
 """"""""""""""""""""""""""" 
@@ -390,23 +397,11 @@ let g:ack_autofold_results = 1
 lua <<EOF
 
 -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+-- local capabilities = vim.lsp.protocol.make_client_capabilities()
+-- capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
-require'lspconfig'.tsserver.setup{
-  capabilities = capabilities,
-}
+require("typescript").setup({})
 EOF
-
-" " Set up Clojure LSP support
-" lua <<EOF
-" require'lspconfig'.clojure_lsp.setup{}
-" EOF
-
-" " Set up Haskell LSP support
-" lua << EOF
-" require'lspconfig'.ghcide.setup{}
-" EOF
 
 " Handy bits to interact with LSP
 nnoremap <silent>K          <cmd>lua vim.lsp.buf.hover()<CR>
@@ -438,49 +433,67 @@ set signcolumn=yes
 """"""""""""""""""""""""""" START Crystalline Specific Settings
 """"""""""""""""""""""""""" 
 " Default settings from README
-function! StatusLine(current, width)
+function! g:GroupSuffix()
+  if mode() ==# 'i' && &paste
+    return '2'
+  endif
+  if &modified
+    return '1'
+  endif
+  return ''
+endfunction
+
+function! g:CrystallineStatuslineFn(winnr)
+  let g:crystalline_group_suffix = g:GroupSuffix()
+  let l:curr = a:winnr == winnr()
   let l:s = ''
 
-  if a:current
-    let l:s .= crystalline#mode() . crystalline#right_mode_sep('')
+  if l:curr
+    let l:s .= crystalline#ModeSection(0, 'A', 'B')
   else
-    let l:s .= '%#CrystallineInactive#'
+    let l:s .= crystalline#HiItem('Fill')
   endif
   let l:s .= ' %f%h%w%m%r '
-  " if a:current
-  "   let l:s .= crystalline#right_sep('', 'Fill') . ' %{fugitive#head()}'
-  " endif
 
   let l:s .= '%='
-  if a:current
-    let l:s .= crystalline#left_sep('', '') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
-    let l:s .= crystalline#left_mode_sep('')
+  if l:curr
+    let l:s .= crystalline#Sep(1, 'Fill', 'B') . '%{&paste ? " PASTE " : " "}'
+    let l:s .= crystalline#Sep(1, 'B', 'A')
   endif
-  if a:width > 80
-    let l:s .= ' %{&ft}[%{&fenc!=#""?&fenc:&enc}][%{&ff}] %l/%L %c%V %P '
+  if winwidth(a:winnr) > 80
+    let l:s .= ' %{&ft} %l/%L %2v '
   else
     let l:s .= ' '
   endif
 
   return l:s
-  endif
-
-  return l:s
 endfunction
 
-" function! TabLine()
-"   let l:vimlabel = has('nvim') ?  ' NVIM ' : ' VIM '
-"   return crystalline#bufferline(2, len(l:vimlabel), 1) . '%=%#CrystallineTab# ' . l:vimlabel
-" endfunction
+function! g:CrystallineTablineFn()
+  let l:max_width = &columns
+  let l:right = '%='
 
-let g:crystalline_enable_sep = 1
-let g:crystalline_statusline_fn = 'StatusLine'
-" let g:crystalline_tabline_fn = 'TabLine'
-let g:crystalline_theme = 'default'
+  let l:right .= crystalline#Sep(1, 'TabFill', 'TabType')
+  let l:max_width -= 1
+
+  let l:vimlabel = has('nvim') ?  ' NVIM ' : ' VIM '
+  let l:right .= l:vimlabel
+  let l:max_width -= strchars(l:vimlabel)
+
+  let l:max_tabs = 23
+
+  return crystalline#DefaultTabline({
+        \ 'enable_sep': 1,
+        \ 'max_tabs': l:max_tabs,
+        \ 'max_width': l:max_width
+        \ }) . l:right
+endfunction
 
 set showtabline=1
 set guioptions-=e
 set laststatus=2
+let g:crystalline_theme = 'ayu'
+let g:crystalline_auto_prefix_groups = 1
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END Crystalline Specific Settings
 """"""""""""""""""""""""""" 
@@ -837,51 +850,115 @@ vim.opt.termguicolors = true
 -- vim.opt.listchars:append "space:⋅"
 -- vim.opt.listchars:append "eol:↴"
 
-require("indent_blankline").setup({
-  use_treesitter = true,
-  show_current_context = true,
-  show_current_context_start = true,
-  context_highlight_list = { "Blue" },
-  context_patterns = {
-    -- NOTE: indent-blankline's defaults
-    "class",
-    "^func",
-    "method",
-    "^if",
-    "while",
-    "for",
-    "with",
-    "try",
-    "except",
-    "arguments",
-    "argument_list",
-    "object",
-    "dictionary",
-    "element",
-    "table",
-    "tuple",
-
-    -- NOTE: better JavaScript/TypeScript support
-    "return_statement",
-    "statement_block",
-  },
-
-  bufname_exclude = { "" }, -- Disables the plugin in hover() popups and new files
-
-  char_highlight_list = { "VertSplit" },
-
-
-  -- space_char_blankline = " ",
-  -- char_highlight_list = {
-  --     "IndentBlanklineIndent1",
-  --     "IndentBlanklineIndent2",
-  --     "IndentBlanklineIndent3",
-  --     "IndentBlanklineIndent4",
-  --     "IndentBlanklineIndent5",
-  --     "IndentBlanklineIndent6",
-  -- },
+require("ibl").setup({
+--   use_treesitter = true,
+--   show_current_context = true,
+--   show_current_context_start = true,
+--   context_highlight_list = { "Blue" },
+--   context_patterns = {
+--     -- NOTE: indent-blankline's defaults
+--     "class",
+--     "^func",
+--     "method",
+--     "^if",
+--     "while",
+--     "for",
+--     "with",
+--     "try",
+--     "except",
+--     "arguments",
+--     "argument_list",
+--     "object",
+--     "dictionary",
+--     "element",
+--     "table",
+--     "tuple",
+-- 
+--     -- NOTE: better JavaScript/TypeScript support
+--     "return_statement",
+--     "statement_block",
+--   },
+-- 
+--   bufname_exclude = { "" }, -- Disables the plugin in hover() popups and new files
+-- 
+--   char_highlight_list = { "VertSplit" },
+-- 
+-- 
 })
 EOF
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END indent-blankline.nvim Specific Settings
+""""""""""""""""""""""""""" 
+
+
+
+
+
+
+
+
+
+
+
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START neogen Specific Settings
+""""""""""""""""""""""""""" 
+
+lua << EOF
+
+require('neogen').setup {
+  enabled = true,             --if you want to disable Neogen
+  input_after_comment = true, -- (default: true) automatic jump (with insert mode) on inserted annotation
+  snippet_engine = "luasnip",
+  javascript = {
+    template = {
+      annotation_convention = "jsdoc",
+      jsdoc = {
+        { nil, "/**" },
+        { nil, " * $1" },
+        { "parameters", " * @param {any} %s $1"},
+        { "return_statement", " * @return {any} %s $1"},
+        { nil, " */"},
+      }
+    }
+  },
+  typescript = {
+    template = {
+      annotation_convention = "tsdoc",
+    }
+  },
+
+}
+
+EOF
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END indent-blankline.nvim Specific Settings
+""""""""""""""""""""""""""" 
+
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" START neoformat Specific Settings
+""""""""""""""""""""""""""" 
+" Ensure that we try to use the local Prettier install
+let g:neoformat_try_node_exe = 1
+
+let g:neoformat_json_prettier = {
+            \ 'exe': 'prettier',
+            \ 'args': ['--format=json'],
+            \ }
+
+let g:neoformat_enabled_javascript = [ 'prettier' ]
+let g:neoformat_enabled_typescript = [ 'prettier' ]
+
+" Set it up so that Prettier runs on save for .js .jsx and .ts files
+augroup AutomaticPrettier
+  autocmd!
+  autocmd BufWritePre,FileWritePre,FileAppendPre *.js undojoin | Neoformat
+  autocmd BufWritePre,FileWritePre,FileAppendPre *.mjs undojoin | Neoformat
+  autocmd BufWritePre,FileWritePre,FileAppendPre *.jsx undojoin | Neoformat
+  autocmd BufWritePre,FileWritePre,FileAppendPre *.tsx undojoin | Neoformat
+  autocmd BufWritePre,FileWritePre,FileAppendPre *.ts undojoin | Neoformat
+augroup END
+""""""""""""""""""""""""""" 
+""""""""""""""""""""""""""" END neoformat Specific Settings
 """"""""""""""""""""""""""" 
