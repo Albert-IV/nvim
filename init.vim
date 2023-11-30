@@ -956,13 +956,16 @@ let g:neoformat_enabled_javascript = [ 'prettier' ]
 let g:neoformat_enabled_typescript = [ 'prettier' ]
 
 " Set it up so that Prettier runs on save for .js .jsx and .ts files
+"
+" NOTE: Not the default values from Neoformat readme, using fixed augroup 
+" from this issue: https://github.com/sbdchd/neoformat/issues/134
 augroup AutomaticPrettier
   autocmd!
-  autocmd BufWritePre,FileWritePre,FileAppendPre *.js undojoin | Neoformat
-  autocmd BufWritePre,FileWritePre,FileAppendPre *.mjs undojoin | Neoformat
-  autocmd BufWritePre,FileWritePre,FileAppendPre *.jsx undojoin | Neoformat
-  autocmd BufWritePre,FileWritePre,FileAppendPre *.tsx undojoin | Neoformat
-  autocmd BufWritePre,FileWritePre,FileAppendPre *.ts undojoin | Neoformat
+  au BufWritePre *.js try | undojoin | Neoformat | catch /^Vim\%((\a\+)\)\=:E790/ | finally | silent Neoformat | endtry
+  au BufWritePre *.mjs try | undojoin | Neoformat | catch /^Vim\%((\a\+)\)\=:E790/ | finally | silent Neoformat | endtry
+  au BufWritePre *.jsx try | undojoin | Neoformat | catch /^Vim\%((\a\+)\)\=:E790/ | finally | silent Neoformat | endtry
+  au BufWritePre *.tsx try | undojoin | Neoformat | catch /^Vim\%((\a\+)\)\=:E790/ | finally | silent Neoformat | endtry
+  au BufWritePre *.ts try | undojoin | Neoformat | catch /^Vim\%((\a\+)\)\=:E790/ | finally | silent Neoformat | endtry
 augroup END
 """"""""""""""""""""""""""" 
 """"""""""""""""""""""""""" END neoformat Specific Settings
@@ -997,7 +1000,7 @@ require("typescript-tools").setup {
     tsserver_format_options = {},
     tsserver_file_preferences = {},
     -- mirror of VSCode's `typescript.suggest.completeFunctionCalls`
-    complete_function_calls = false,
+    complete_function_calls = true,
     include_completions_with_insert_text = true,
     -- CodeLens
     -- WARNING: Experimental feature also in VSCode, because it might hit performance of server.
@@ -1006,10 +1009,27 @@ require("typescript-tools").setup {
     -- by default code lenses are displayed on all referencable values and for some of you it can
     -- be too much this option reduce count of them by removing member references from lenses
     disable_member_code_lens = true,
+
+    -- Ensure JavaScript projects get TS analysis by default
+    implicitProjectConfiguration = { 
+      checkJs = true
+    },
   },
 }
 EOF
 
 """""""""""""""""""""""""""
 """"""""""""""""""""""""""" END typescript-tools Specific Settings
+"""""""""""""""""""""""""""
+
+
+
+
+"""""""""""""""""""""""""""
+""""""""""""""""""""""""""" START ale Specific Settings
+"""""""""""""""""""""""""""
+au BufRead,BufNewFile cloud-formation.yaml set filetype=yaml.cloudformation
+au BufRead,BufNewFile *.template.yaml set filetype=yaml.cloudformation
+"""""""""""""""""""""""""""
+""""""""""""""""""""""""""" END ale Specific Settings
 """""""""""""""""""""""""""
