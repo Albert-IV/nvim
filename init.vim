@@ -43,7 +43,7 @@ Plug 'pmizio/typescript-tools.nvim'
 " General Languages
 Plug 'tpope/vim-commentary'
 Plug 'dense-analysis/ale'
-Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 Plug 'nvim-treesitter/nvim-treesitter-refactor'
 
@@ -56,7 +56,6 @@ Plug 'danymat/neogen'
 " Luasnip for cmp plugin
 Plug 'L3MON4D3/LuaSnip'
 Plug 'saadparwaiz1/cmp_luasnip'
-
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-omni'
@@ -725,6 +724,12 @@ nnoremap <C-Space> :Telescope buffers<cr>
 set completeopt=menuone,noselect
 
 lua <<EOF
+local has_words_before = function()
+  if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then return false end
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  return col ~= 0 and vim.api.nvim_buf_get_text(0, line-1, 0, line-1, col, {})[1]:match("^%s*$") == nil
+end
+
 local cmp = require'cmp'
 cmp.setup({
     snippet = {
@@ -743,8 +748,20 @@ cmp.setup({
       ['<C-Space>'] = cmp.mapping.complete(),
       ['<C-e>'] = cmp.mapping.abort(),
       ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-      ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' }),
-      ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 's' }),
+      ['<Tab>'] = vim.schedule_wrap(function(fallback)
+                    if cmp.visible() and has_words_before() then
+                      cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
+                    else
+                      fallback()
+                    end
+                  end),
+      ['<S-Tab>'] = vim.schedule_wrap(function(fallback)
+                    if cmp.visible() and has_words_before() then
+                      cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
+                    else
+                      fallback()
+                    end
+                  end),
     }),
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
@@ -954,6 +971,7 @@ let g:neoformat_json_prettier = {
 
 let g:neoformat_enabled_javascript = [ 'prettier' ]
 let g:neoformat_enabled_typescript = [ 'prettier' ]
+let g:neoformat_enabled_typescriptreact = [ 'prettier' ]
 
 " Set it up so that Prettier runs on save for .js .jsx and .ts files
 "
@@ -976,6 +994,8 @@ augroup END
 """"""""""""""""""""""""""" START typescript-tools Specific Settings
 """""""""""""""""""""""""""
 lua << EOF
+local api = require("typescript-tools.api")
+
 require("typescript-tools").setup {
   settings = {
     -- spawn additional tsserver instance to calculate diagnostics on it
@@ -1015,6 +1035,12 @@ require("typescript-tools").setup {
       checkJs = true
     },
   },
+
+  handlers = {
+    ["textDocument/publishDiagnostics"] = api.filter_diagnostics(
+      { 80006, 1259 }
+    ),
+  },
 }
 EOF
 
@@ -1033,3 +1059,8 @@ au BufRead,BufNewFile *.template.yaml set filetype=yaml.cloudformation
 """""""""""""""""""""""""""
 """"""""""""""""""""""""""" END ale Specific Settings
 """""""""""""""""""""""""""
+
+
+
+
+
