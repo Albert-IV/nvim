@@ -23,6 +23,8 @@ Plug 'mileszs/ack.vim'
 Plug 'neovim/nvim-lsp'
 Plug 'mattboehm/vim-accordion'
 Plug 'lukas-reineke/indent-blankline.nvim'
+Plug 'kana/vim-textobj-user'
+Plug 'kana/vim-textobj-line'
 
 " Plug 'windwp/nvim-autopairs'
 Plug 'cohama/lexima.vim'
@@ -163,6 +165,8 @@ nnoremap * *zz
 nnoremap # #zz
 nnoremap g* g*zz
 nnoremap g# g#zz
+nnoremap { {zz
+nnoremap } }zz
 
 " Map Cmd + jklh to change windows
 nnoremap <C-J> <C-W><C-J>
